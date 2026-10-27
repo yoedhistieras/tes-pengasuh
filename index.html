@@ -4,166 +4,262 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
-<title>Tes Calon Pengasuh</title>
+<meta name="theme-color" content="#15705D">
+<title>Tes Calon Pengasuh Anak</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&display=swap">
 <style>
-/* Candidate side only: questions, no scoring. Answer keys live in the owner's dashboard. */
+/* Candidate test. One question per screen, big tap targets, plain words. No scoring lives here. */
 :root{
-  --bg:#F2F6F4; --surface:#FFFFFF; --sunk:#E6EEEB; --ink:#16302B; --muted:#566C67; --line:#D2DEDA;
-  --accent:#15705D; --accent-ink:#FFFFFF; --accent-soft:#D7EDE7;
-  --most:#1E8A4B; --most-soft:#DCF2E4; --least:#C03A29; --least-soft:#F8E0DB;
-  --wa:#1FA855;
+  --bg:#EEF4F2; --surface:#FFFFFF; --sunk:#E3ECE9; --ink:#132B27; --muted:#556964; --line:#D0DDD9;
+  --accent:#15705D; --accent-ink:#FFFFFF; --accent-soft:#D5ECE5;
+  --most:#1C8748; --most-soft:#DBF1E3; --least:#BD3A2A; --least-soft:#F8DFDA;
+  --wa:#1FA855; --shadow:0 1px 2px rgb(19 43 39 / .06), 0 4px 16px rgb(19 43 39 / .06);
   --font:'Lexend', ui-rounded, 'Segoe UI', system-ui, sans-serif;
 }
 @media (prefers-color-scheme: dark){:root{
-  --bg:#0E1916; --surface:#15221E; --sunk:#1C2B27; --ink:#E3EEEA; --muted:#98AEA9; --line:#2A3B36;
+  --bg:#0D1715; --surface:#14211D; --sunk:#1B2A26; --ink:#E3EEEA; --muted:#9AB0AA; --line:#283A35;
   --accent:#4DC1A5; --accent-ink:#06201A; --accent-soft:#163A31;
-  --most:#4CC27F; --most-soft:#163724; --least:#F07A6A; --least-soft:#3D1E19; --wa:#2BC066; color-scheme:dark}}
+  --most:#4CC27F; --most-soft:#163724; --least:#F07A6A; --least-soft:#3D1E19; --wa:#2BC066;
+  --shadow:none; color-scheme:dark}}
 *{box-sizing:border-box}
-html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:17px;line-height:1.5;-webkit-font-smoothing:antialiased}
-.wrap{max-width:560px;margin:0 auto;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:24px 48px;display:flex;flex-direction:column;gap:18px}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:17px;line-height:1.5;-webkit-font-smoothing:antialiased;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 p{margin:0}
 [hidden]{display:none!important}
-button{font:inherit;color:inherit;cursor:pointer}
-button:focus-visible,input:focus-visible,textarea:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
-.brand{display:flex;align-items:center;gap:10px;font-weight:600}
-.brand-mark{width:34px;height:34px;border-radius:10px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-weight:700;font-size:.85rem}
-.eyebrow{font-size:.78rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+button{font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
+button:focus-visible,input:focus-visible,textarea:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+.shell{max-width:560px;margin:0 auto;min-height:100dvh;display:flex;flex-direction:column;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px))}
+.bar{position:sticky;top:0;z-index:5;background:var(--bg);padding-block:12px 10px;display:flex;flex-direction:column;gap:10px}
+.bar-row{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:36px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:600;font-size:.95rem}
+.mark{width:32px;height:32px;border-radius:9px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-weight:700;font-size:.8rem;flex:none}
+.part{font-size:.82rem;font-weight:600;color:var(--muted)}
+.progress{height:6px;border-radius:99px;background:var(--sunk);overflow:hidden}
+.progress span{display:block;height:100%;background:var(--accent);border-radius:99px;transition:width .3s ease}
+main{flex:1;display:flex;flex-direction:column;gap:18px;padding-block:8px 28px}
+.foot{position:sticky;bottom:0;background:linear-gradient(to top, var(--bg) 70%, transparent);padding-block:14px calc(14px + env(safe-area-inset-bottom,0px));display:flex;gap:10px}
+
+.stack{display:flex;flex-direction:column;gap:6px}
+.prt div{display:flex;flex-direction:column;min-width:0}
+.title{font-size:1.65rem;font-weight:600;line-height:1.25;text-wrap:balance}
+.lead{font-size:1.12rem}
 .muted{color:var(--muted)}
-.small{font-size:.88rem}
-.spread{display:flex;justify-content:space-between;align-items:center;gap:10px}
-.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.btn{display:flex;align-items:center;justify-content:center;gap:10px;border:0;border-radius:12px;padding:14px 18px;font-weight:600;font-size:1.05rem;background:var(--accent);color:var(--accent-ink);min-height:56px;width:100%;text-decoration:none}
+.small{font-size:.9rem}
+.eyebrow{font-size:.8rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:12px;box-shadow:var(--shadow)}
+.tips{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:12px}
+.tips li{display:flex;gap:12px;align-items:flex-start}
+.tips .n{flex:none;width:28px;height:28px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-weight:700;font-size:.85rem}
+.parts{display:flex;flex-direction:column;gap:10px}
+.prt{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:12px;background:var(--sunk)}
+.prt b{display:block}
+.prt .num{flex:none;width:34px;height:34px;border-radius:10px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-weight:700}
+
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;border:0;border-radius:14px;padding:14px 20px;font-weight:600;font-size:1.08rem;
+  background:var(--accent);color:var(--accent-ink);min-height:56px;width:100%;text-decoration:none;transition:transform .1s}
+.btn:active{transform:scale(.98)}
 .btn[disabled]{opacity:.4;cursor:not-allowed}
-.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line);width:auto}
+.btn.ghost{background:var(--surface);color:var(--ink);border:1px solid var(--line);width:auto;flex:none;padding-inline:18px}
 .btn.wa{background:var(--wa);color:#fff;font-size:1.15rem;min-height:64px}
-.btn svg{width:24px;height:24px}
-.icon-btn{display:inline-flex;align-items:center;gap:8px;background:var(--sunk);border:0;border-radius:999px;padding:8px 14px;font-weight:500;font-size:.9rem;flex:none}
-.icon-btn svg{width:18px;height:18px}
-.big{font-size:1.8rem;font-weight:600;line-height:1.25}
-.lead{font-size:1.15rem}
-.howto{display:flex;flex-direction:column;gap:12px;font-size:1.15rem}
-.howto ol{margin:0;padding-left:1.4em;display:flex;flex-direction:column;gap:10px}
-.swatch{display:inline-block;padding:1px 8px;border-radius:6px;font-weight:700;color:#fff}
-.swatch.m{background:var(--most)} .swatch.l{background:var(--least)}
-label{display:flex;flex-direction:column;gap:6px;font-weight:500;font-size:1.1rem}
-input,textarea{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;width:100%}
+.btn svg{width:24px;height:24px;flex:none}
+.listen{display:inline-flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:7px 14px;font-weight:500;font-size:.88rem;flex:none}
+.listen svg{width:18px;height:18px}
+
+label{display:flex;flex-direction:column;gap:8px;font-weight:500;font-size:1.05rem}
+input,textarea{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;width:100%;min-height:54px}
 textarea{min-height:120px;font-size:.85rem}
-.progress{height:8px;border-radius:99px;background:var(--sunk);overflow:hidden}
-.progress span{display:block;height:100%;background:var(--accent);border-radius:99px;transition:width .25s}
-.qtext{font-size:1.35rem;font-weight:500;line-height:1.4}
-.step{padding:12px 14px;border-radius:12px;font-weight:600;font-size:1.05rem}
+.err{color:var(--least);font-weight:500;font-size:.95rem}
+
+.q{font-size:1.32rem;font-weight:500;line-height:1.4;text-wrap:pretty}
+.story{font-size:1.2rem;line-height:1.55;background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--accent);padding:16px 16px 16px 18px;border-radius:14px;box-shadow:var(--shadow)}
+.ask{font-weight:600;font-size:1.1rem}
+.step{padding:12px 14px;border-radius:12px;font-weight:600;font-size:1.02rem;display:flex;align-items:center;gap:10px}
 .step.m{background:var(--most-soft);color:var(--most)}
 .step.l{background:var(--least-soft);color:var(--least)}
 .step.ok{background:var(--accent-soft);color:var(--accent)}
+.step .dot{width:12px;height:12px;border-radius:50%;background:currentColor;flex:none}
+
 .opts{display:flex;flex-direction:column;gap:10px}
-.opt{display:flex;align-items:center;gap:14px;text-align:left;width:100%;padding:16px;border-radius:14px;border:2px solid var(--line);background:var(--surface);font-size:1.15rem;line-height:1.4;min-height:64px}
+.opt{display:flex;align-items:center;gap:14px;text-align:left;width:100%;padding:15px 16px;border-radius:14px;border:2px solid var(--line);background:var(--surface);
+  font-size:1.1rem;line-height:1.4;min-height:62px;box-shadow:var(--shadow);transition:border-color .12s, background .12s}
 .opt .txt{flex:1;min-width:0}
-.opt .tag{flex:none;font-size:.75rem;font-weight:700;padding:4px 8px;border-radius:8px}
+.opt .letter{flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-weight:600;background:var(--sunk);font-size:.95rem}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt.sel .letter{background:var(--accent);color:var(--accent-ink)}
+.opt .tag{flex:none;font-size:.72rem;font-weight:700;padding:4px 8px;border-radius:8px;letter-spacing:.02em}
 .opt.m{border-color:var(--most);background:var(--most-soft)} .opt.m .tag{background:var(--most);color:#fff}
 .opt.l{border-color:var(--least);background:var(--least-soft)} .opt.l .tag{background:var(--least);color:#fff}
-.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
-.opt .letter{flex:none;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-weight:600;background:var(--sunk)}
-.opt.sel .letter{background:var(--accent);color:var(--accent-ink)}
-.story{font-size:1.2rem;line-height:1.55;background:var(--sunk);padding:16px;border-radius:14px}
-.nav{display:grid;grid-template-columns:auto 1fr;gap:10px}
-.nav .btn{width:auto}
-.done-mark{width:72px;height:72px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;margin:0 auto}
-.done-mark svg{width:38px;height:38px}
+.scale .opt{min-height:56px;padding-block:12px}
+.dots{display:flex;gap:4px;flex:none}
+.dots i{width:10px;height:10px;border-radius:50%;border:2px solid var(--accent);opacity:.9}
+.dots i.f{background:var(--accent)}
+.opt.sel .dots i{border-color:var(--accent)}
+
+.example{display:flex;flex-direction:column;gap:8px;padding:14px;border-radius:14px;background:var(--sunk)}
+.example .opt{box-shadow:none;min-height:auto;padding:10px 12px;font-size:.98rem;cursor:default}
+.swatch{display:inline-block;padding:1px 8px;border-radius:6px;font-weight:700;color:#fff}
+.swatch.m{background:var(--most)} .swatch.l{background:var(--least)}
 .center{text-align:center}
-.err{color:var(--least);font-weight:500}
+.done-mark{width:76px;height:76px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;margin:8px auto 0}
+.done-mark svg{width:40px;height:40px}
+details summary{cursor:pointer;color:var(--muted);padding:6px 0}
+.note{font-size:.82rem;color:var(--muted)}
+.toast{background:var(--accent-soft);color:var(--accent);padding:10px 14px;border-radius:12px;font-size:.92rem;font-weight:500}
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}
 </style>
 </head>
 <body>
-<div class="wrap" id="app"><div class="brand"><span class="brand-mark">TP</span>Tes Calon Pengasuh</div><p class="muted">Memuat…</p></div>
-
+<div class="shell" id="app">
+  <div class="bar"><div class="bar-row"><div class="brand"><span class="mark">TP</span>Tes Calon Pengasuh</div></div></div>
+  <main><p class="muted">Memuat tes…</p></main>
+</div>
 <script>
-// Keep DISC/SCEN text and order in sync with the owner dashboard: answers are sent as positions.
-const DASHBOARD = "https://claude.ai/artifact/NQPgGTmu5d9p953pj9iBqh";
+const BIO = [{"id":"exp","q":"Sudah berapa lama kamu kerja jadi pengasuh anak?","o":["Belum pernah","Kurang dari 1 tahun","1 sampai 3 tahun","Lebih dari 3 tahun"]},{"id":"baby","q":"Pernah mengasuh anak di bawah umur 2 tahun?","o":["Belum pernah","Pernah, sebentar saja","Pernah, lebih dari 6 bulan"]},{"id":"last","q":"Berapa lama kamu kerja di tempat terakhir?","o":["Belum pernah kerja","Kurang dari 6 bulan","6 bulan sampai 1 tahun","Lebih dari 1 tahun"]},{"id":"why","q":"Kenapa kamu berhenti dari tempat kerja terakhir?","o":["Belum pernah kerja","Kontrak atau kerjaan sudah selesai","Ada masalah dengan majikan","Urusan keluarga","Gaji kurang","Alasan lain"]},{"id":"plan","q":"Kalau diterima, kamu mau kerja di sini berapa lama?","o":["Kurang dari 1 tahun","1 sampai 2 tahun","Lebih dari 2 tahun","Belum tahu"]},{"id":"smoke","q":"Apakah kamu merokok?","o":["Tidak","Ya, kadang-kadang","Ya, setiap hari"]}];
+const SCEN = [{"t":"Kakak (umur 2,5 tahun) jatuh dari kursi. Kepalanya terbentur. Dia menangis sebentar, lalu main lagi. Ibu sedang di kantor.","o":["Kompres kepalanya. Nanti kalau Ibu tanya, baru cerita.","Langsung telepon atau WA Ibu. Lalu terus awasi Kakak.","Tidak usah bilang. Dia sudah main lagi.","Cerita ke Ibu waktu Ibu pulang."]},{"t":"Kamu sedang masak. Kompor menyala. Adik (umur 1 tahun) menangis di kamar. Kakak main sendiri di ruang tamu.","o":["Selesaikan masak dulu. Sebentar lagi juga selesai.","Suruh Kakak lihat Adik.","Matikan kompor dulu, lalu lihat Adik.","Bawa Adik ke dapur. Gendong sambil masak."]},{"t":"Kakak minta HP untuk nonton. Ibu sudah bilang: tidak boleh HP sebelum makan. Kakak menangis keras sekali.","o":["Kasih HP sebentar supaya diam.","Tetap tidak kasih. Ajak main yang lain.","Kasih HP, tapi jangan bilang Ibu.","Telepon Ibu, tanya boleh atau tidak."]},{"t":"Ada orang datang ke rumah. Dia bilang teman Bapak dan mau mengambil barang. Bapak dan Ibu tidak bilang apa-apa ke kamu.","o":["Persilakan masuk. Kan teman Bapak.","Ambilkan barangnya. Dia tunggu di luar.","Minta dia tunggu di luar. Lalu telepon Bapak atau Ibu.","Suruh dia datang lagi nanti."]},{"t":"Kamu tidak sengaja memecahkan piring kesayangan Ibu. Ibu tidak melihat.","o":["Langsung bilang ke Ibu dan minta maaf.","Buang pecahannya dan diam saja. Mungkin Ibu tidak sadar.","Buang pecahannya. Kalau Ibu tanya, baru bilang.","Bilang Kakak yang memecahkan."]},{"t":"Adik dan Kakak sedang tidur siang.","o":["Main HP sambil tiduran di kamar saya.","Kerjakan pekerjaan rumah. Sering cek anak-anak.","Keluar sebentar beli jajan.","Ikut tidur di dekat anak-anak."]},{"t":"Waktu mencuci baju, kamu menemukan uang Rp100.000 di kantong celana Bapak.","o":["Taruh di meja kamar.","Simpan dulu. Kalau ada yang tanya, baru kasih.","Masukkan lagi ke kantong.","Kasih langsung ke Bapak atau Ibu."]},{"t":"Adik demam. Badannya panas. Ibu belum pulang.","o":["Kasih obat penurun panas yang ada di rumah.","Tunggu Ibu pulang. Nanti Ibu yang urus.","Tanya tetangga harus bagaimana.","Telepon Ibu, lalu kompres Adik."]},{"t":"Kakak memukul Adik sampai Adik menangis.","o":["Pukul tangan Kakak supaya kapok.","Pisahkan mereka. Bilang ke Kakak: tidak boleh memukul. Lalu cek Adik.","Marahi Kakak dengan suara keras.","Biarkan saja. Namanya juga anak kecil."]},{"t":"Kakak tidak mau makan. Sudah 30 menit.","o":["Paksa suapi sampai habis.","Kasih biskuit saja supaya kenyang.","Bilang: nanti dimarahi Ibu, lho.","Biarkan main dulu, coba lagi nanti. Lalu kasih tahu Ibu."]},{"t":"Adik sedang makan, lalu tersedak. Dia batuk-batuk keras.","o":["Kasih minum air yang banyak.","Biarkan dia batuk sambil diawasi. Kalau dia tidak bisa bernapas, tepuk punggungnya dengan kuat.","Ambil makanannya dari mulut pakai jari.","Telepon Ibu dulu, tanya harus bagaimana."]},{"t":"Kakak sedang lucu sekali. Kamu ingin memotretnya.","o":["Foto, lalu pasang di status WA atau media sosial saya.","Foto, lalu kirim ke Ibu saja.","Tidak usah foto. Fokus jaga anak.","Foto, lalu simpan di HP saya sendiri."]}];
+const LIKERT_SCALE = ["Sangat tidak cocok","Tidak cocok","Ragu-ragu","Cocok","Sangat cocok"];
+const LIK = [{"t":"Saya menyelesaikan kerjaan sampai beres."},{"t":"Saya sabar menghadapi anak yang rewel."},{"t":"Saya gampang panik."},{"t":"Saya mengaku kalau saya salah."},{"t":"Saya tidak pernah marah sama sekali, seumur hidup."},{"t":"Saya sering lupa tugas yang sudah disuruh."},{"t":"Saya gampang kesal kalau anak tidak menurut."},{"t":"Saya tetap tenang kalau ada masalah."},{"t":"Kalau tidak ketahuan, mengambil sedikit barang majikan itu tidak apa-apa."},{"t":"Saya menaruh barang kembali di tempatnya."},{"t":"Saya peduli kalau ada orang yang sedih."},{"t":"Saya tidak pernah bohong, satu kali pun."},{"t":"Saya gampang marah."},{"t":"Saya tetap berkata jujur, walaupun bisa kena marah."},{"t":"Saya suka menunda kerjaan."},{"t":"Soal ini untuk cek. Tekan jawaban \"Tidak cocok\"."},{"t":"Saya bicara dengan suara lembut ke anak kecil."},{"t":"Setelah dimarahi, saya cepat semangat lagi."},{"t":"Kadang saya pura-pura sakit supaya bisa libur."},{"t":"Saya suka semua orang yang pernah saya temui."},{"t":"Saya bangun dan datang tepat waktu."},{"t":"Saya membalas kalau ada orang yang kasar ke saya."},{"t":"Saya sering merasa sedih atau cemas."},{"t":"Saya mau bohong sedikit kalau itu menguntungkan saya."},{"t":"Saya kerja asal cepat selesai, tidak rapi."},{"t":"Saya tidak pernah malas, satu hari pun."},{"t":"Saya kurang suka lama-lama bersama anak kecil."},{"t":"Kalau ada kejadian mendadak, saya jadi bingung dan panik."},{"t":"Kerjaan yang saya mulai, pasti saya selesaikan sampai beres."},{"t":"Saya tidak pernah membicarakan orang lain di belakangnya."},{"t":"Kalau anak menangis lama, saya tetap sabar."},{"t":"Kalau saya berbuat salah, saya langsung bilang."},{"t":"Suasana hati saya biasanya baik."},{"t":"Saya tidak mau mengambil barang orang lain, sekecil apa pun."}];
+const DISC = [{"q":"","o":{"D":"Saya suka kerja cepat, supaya cepat selesai.","I":"Saya senang ngobrol dengan orang di rumah.","S":"Saya suka kerjaan yang sama setiap hari.","C":"Saya suka barang ada di tempatnya."}},{"q":"Kalau ada masalah di rumah…","o":{"D":"Saya langsung cari jalan keluar sendiri.","I":"Saya cerita ke orang lain supaya dibantu.","S":"Saya tenang dulu, tidak buru-buru.","C":"Saya pikir dulu baik-baik, baru bertindak."}},{"q":"Teman bilang saya orangnya…","o":{"D":"Berani.","I":"Lucu dan ramai.","S":"Sabar.","C":"Teliti."}},{"q":"Kalau disuruh dengan cara yang menurut saya kurang bagus…","o":{"D":"Saya bilang cara saya lebih cepat.","I":"Saya ajak ngobrol baik-baik.","S":"Saya ikuti saja. Tidak enak kalau membantah.","C":"Saya tanya alasannya, supaya paham."}},{"q":"Waktu kerja, saya paling senang kalau…","o":{"D":"Kerjaan selesai lebih cepat dari waktunya.","I":"Suasana rumah ramai dan ceria.","S":"Semua orang di rumah akur dan tenang.","C":"Semua kerjaan rapi dan tidak ada yang salah."}},{"q":"","o":{"D":"Saya tidak suka menunggu lama.","I":"Saya gampang akrab dengan orang baru.","S":"Saya perlu waktu untuk biasa di tempat baru.","C":"Saya suka ada daftar kerjaan yang jelas."}},{"q":"Kalau saya sedang capek…","o":{"D":"Saya tetap paksa sampai selesai.","I":"Saya cari teman ngobrol supaya semangat lagi.","S":"Saya diam dan tetap kerja pelan-pelan.","C":"Saya atur lagi, mana yang harus duluan."}},{"q":"Saya paling tidak suka kalau…","o":{"D":"Disuruh terus, tidak boleh pakai cara sendiri.","I":"Kerja sendirian, tidak ada teman bicara.","S":"Aturan rumah sering berubah-ubah.","C":"Kerjaan dibuat asal-asalan."}},{"q":"Kalau main dengan anak kecil…","o":{"D":"Saya ajak main yang aktif, seperti kejar-kejaran.","I":"Saya nyanyi dan bikin dia ketawa.","S":"Saya temani dia main apa saja yang dia mau.","C":"Saya ajari dia hal baru, seperti warna atau angka."}},{"q":"Kalau ada aturan baru di rumah…","o":{"D":"Saya coba dulu. Kalau tidak cocok, saya bilang.","I":"Saya tanya-tanya ke orang lain di rumah.","S":"Saya perlu waktu supaya biasa.","C":"Saya catat supaya tidak lupa."}},{"q":"","o":{"D":"Saya suka jadi yang memimpin.","I":"Saya senang dipuji kalau kerja bagus.","S":"Saya senang membantu orang lain.","C":"Saya suka kerja yang hasilnya pasti."}},{"q":"Kalau ada orang marah ke saya…","o":{"D":"Saya jawab dan jelaskan saat itu juga.","I":"Saya coba bikin suasana enak lagi.","S":"Saya diam dan dengarkan.","C":"Saya cek dulu, apa saya memang salah."}},{"q":"Waktu hari libur, saya paling suka…","o":{"D":"Pergi ke tempat baru.","I":"Kumpul dan ngobrol dengan teman.","S":"Istirahat atau kumpul dengan keluarga.","C":"Membereskan barang-barang saya."}},{"q":"","o":{"D":"Saya cepat ambil keputusan.","I":"Saya gampang semangat.","S":"Saya tidak gampang marah.","C":"Saya hati-hati sebelum bicara."}},{"q":"Kalau anak menangis terus…","o":{"D":"Saya gendong dan bawa keluar supaya diam.","I":"Saya ajak ngomong dan bercanda supaya dia lupa.","S":"Saya peluk dan tunggu sampai dia tenang.","C":"Saya pakai cara yang sudah diajarkan Ibu."}},{"q":"Waktu belajar hal baru…","o":{"D":"Saya langsung coba sendiri.","I":"Saya cepat paham kalau diajak ngobrol.","S":"Saya perlu dicontohkan dulu, pelan-pelan.","C":"Saya perlu tahu langkahnya satu per satu."}},{"q":"Orang yang kenal saya kadang bilang…","o":{"D":"Saya keras kepala.","I":"Saya cerewet.","S":"Saya terlalu mengalah.","C":"Saya terlalu banyak tanya."}},{"q":"Kalau kerja bersama orang lain…","o":{"D":"Saya suka yang mengatur pembagian kerja.","I":"Saya yang bikin suasana jadi seru.","S":"Saya bantu di mana saja yang perlu.","C":"Saya pastikan semua dikerjakan dengan benar."}},{"q":"Saya merasa puas kalau…","o":{"D":"Saya berhasil mengerjakan hal yang susah.","I":"Orang di rumah senang dengan saya.","S":"Saya bisa kerja lama di satu tempat.","C":"Hasil kerja saya rapi dan bersih."}},{"q":"","o":{"D":"Saya suka tantangan.","I":"Saya suka suasana ramai.","S":"Saya suka suasana tenang.","C":"Saya suka suasana teratur."}}];
+/* Shared by both pages: helpers, DISC block order and the answer code that travels
+   from the candidate page to the admin dashboard inside a WhatsApp link. */
 
-const DISC = [
-  {q:"", o:{D:"Saya suka kerja cepat, supaya cepat selesai.", I:"Saya senang ngobrol dengan orang di rumah.", S:"Saya suka kerjaan yang sama setiap hari.", C:"Saya suka barang ada di tempatnya."}},
-  {q:"Kalau ada masalah di rumah…", o:{D:"Saya langsung cari jalan keluar sendiri.", I:"Saya cerita ke orang lain supaya dibantu.", S:"Saya tenang dulu, tidak buru-buru.", C:"Saya pikir dulu baik-baik, baru bertindak."}},
-  {q:"Teman bilang saya orangnya…", o:{D:"Berani.", I:"Lucu dan ramai.", S:"Sabar.", C:"Teliti."}},
-  {q:"Kalau disuruh dengan cara yang menurut saya kurang bagus…", o:{D:"Saya bilang cara saya lebih cepat.", I:"Saya ajak ngobrol baik-baik.", S:"Saya ikuti saja. Tidak enak kalau membantah.", C:"Saya tanya alasannya, supaya paham."}},
-  {q:"Waktu kerja, saya paling senang kalau…", o:{D:"Kerjaan selesai lebih cepat dari waktunya.", I:"Suasana rumah ramai dan ceria.", S:"Semua orang di rumah akur dan tenang.", C:"Semua kerjaan rapi dan tidak ada yang salah."}},
-  {q:"", o:{D:"Saya tidak suka menunggu lama.", I:"Saya gampang akrab dengan orang baru.", S:"Saya perlu waktu untuk biasa di tempat baru.", C:"Saya suka ada daftar kerjaan yang jelas."}},
-  {q:"Kalau saya sedang capek…", o:{D:"Saya tetap paksa sampai selesai.", I:"Saya cari teman ngobrol supaya semangat lagi.", S:"Saya diam dan tetap kerja pelan-pelan.", C:"Saya atur lagi, mana yang harus duluan."}},
-  {q:"Saya paling tidak suka kalau…", o:{D:"Disuruh terus, tidak boleh pakai cara sendiri.", I:"Kerja sendirian, tidak ada teman bicara.", S:"Aturan rumah sering berubah-ubah.", C:"Kerjaan dibuat asal-asalan."}},
-  {q:"Kalau main dengan anak kecil…", o:{D:"Saya ajak main yang aktif, seperti kejar-kejaran.", I:"Saya nyanyi dan bikin dia ketawa.", S:"Saya temani dia main apa saja yang dia mau.", C:"Saya ajari dia hal baru, seperti warna atau angka."}},
-  {q:"Kalau ada aturan baru di rumah…", o:{D:"Saya coba dulu. Kalau tidak cocok, saya bilang.", I:"Saya tanya-tanya ke orang lain di rumah.", S:"Saya perlu waktu supaya biasa.", C:"Saya catat supaya tidak lupa."}},
-  {q:"", o:{D:"Saya suka jadi yang memimpin.", I:"Saya senang dipuji kalau kerja bagus.", S:"Saya senang membantu orang lain.", C:"Saya suka kerja yang hasilnya pasti."}},
-  {q:"Kalau ada orang marah ke saya…", o:{D:"Saya jawab dan jelaskan saat itu juga.", I:"Saya coba bikin suasana enak lagi.", S:"Saya diam dan dengarkan.", C:"Saya cek dulu, apa saya memang salah."}},
-  {q:"Waktu hari libur, saya paling suka…", o:{D:"Pergi ke tempat baru.", I:"Kumpul dan ngobrol dengan teman.", S:"Istirahat atau kumpul dengan keluarga.", C:"Membereskan barang-barang saya."}},
-  {q:"", o:{D:"Saya cepat ambil keputusan.", I:"Saya gampang semangat.", S:"Saya tidak gampang marah.", C:"Saya hati-hati sebelum bicara."}},
-  {q:"Kalau anak menangis terus…", o:{D:"Saya gendong dan bawa keluar supaya diam.", I:"Saya ajak ngomong dan bercanda supaya dia lupa.", S:"Saya peluk dan tunggu sampai dia tenang.", C:"Saya pakai cara yang sudah diajarkan Ibu."}},
-  {q:"Waktu belajar hal baru…", o:{D:"Saya langsung coba sendiri.", I:"Saya cepat paham kalau diajak ngobrol.", S:"Saya perlu dicontohkan dulu, pelan-pelan.", C:"Saya perlu tahu langkahnya satu per satu."}},
-  {q:"Orang yang kenal saya kadang bilang…", o:{D:"Saya keras kepala.", I:"Saya cerewet.", S:"Saya terlalu mengalah.", C:"Saya terlalu banyak tanya."}},
-  {q:"Kalau kerja bersama orang lain…", o:{D:"Saya suka yang mengatur pembagian kerja.", I:"Saya yang bikin suasana jadi seru.", S:"Saya bantu di mana saja yang perlu.", C:"Saya pastikan semua dikerjakan dengan benar."}},
-  {q:"Saya merasa puas kalau…", o:{D:"Saya berhasil mengerjakan hal yang susah.", I:"Orang di rumah senang dengan saya.", S:"Saya bisa kerja lama di satu tempat.", C:"Hasil kerja saya rapi dan bersih."}},
-  {q:"", o:{D:"Saya suka tantangan.", I:"Saya suka suasana ramai.", S:"Saya suka suasana tenang.", C:"Saya suka suasana teratur."}},
-];
-
-const SCEN = [
-  {t:"Kakak (umur 2,5 tahun) jatuh dari kursi. Kepalanya terbentur. Dia menangis sebentar, lalu main lagi. Ibu sedang di kantor.",
-   o:["Kompres kepalanya. Nanti kalau Ibu tanya, baru cerita.","Langsung telepon atau WA Ibu. Lalu terus awasi Kakak.","Tidak usah bilang. Dia sudah main lagi.","Cerita ke Ibu waktu Ibu pulang."]},
-  {t:"Kamu sedang masak. Kompor menyala. Adik (umur 1 tahun) menangis di kamar. Kakak main sendiri di ruang tamu.",
-   o:["Selesaikan masak dulu. Sebentar lagi juga selesai.","Suruh Kakak lihat Adik.","Matikan kompor dulu, lalu lihat Adik.","Bawa Adik ke dapur. Gendong sambil masak."]},
-  {t:"Kakak minta HP untuk nonton. Ibu sudah bilang: tidak boleh HP sebelum makan. Kakak menangis keras sekali.",
-   o:["Kasih HP sebentar supaya diam.","Tetap tidak kasih. Ajak main yang lain.","Kasih HP, tapi jangan bilang Ibu.","Telepon Ibu, tanya boleh atau tidak."]},
-  {t:"Ada orang datang ke rumah. Dia bilang teman Bapak dan mau mengambil barang. Bapak dan Ibu tidak bilang apa-apa ke kamu.",
-   o:["Persilakan masuk. Kan teman Bapak.","Ambilkan barangnya. Dia tunggu di luar.","Minta dia tunggu di luar. Lalu telepon Bapak atau Ibu.","Suruh dia datang lagi nanti."]},
-  {t:"Kamu tidak sengaja memecahkan piring kesayangan Ibu. Ibu tidak melihat.",
-   o:["Langsung bilang ke Ibu dan minta maaf.","Buang pecahannya dan diam saja. Mungkin Ibu tidak sadar.","Buang pecahannya. Kalau Ibu tanya, baru bilang.","Bilang Kakak yang memecahkan."]},
-  {t:"Adik dan Kakak sedang tidur siang.",
-   o:["Main HP sambil tiduran di kamar saya.","Kerjakan pekerjaan rumah. Sering cek anak-anak.","Keluar sebentar beli jajan.","Ikut tidur di dekat anak-anak."]},
-  {t:"Waktu mencuci baju, kamu menemukan uang Rp100.000 di kantong celana Bapak.",
-   o:["Taruh di meja kamar.","Simpan dulu. Kalau ada yang tanya, baru kasih.","Masukkan lagi ke kantong.","Kasih langsung ke Bapak atau Ibu."]},
-  {t:"Adik demam. Badannya panas. Ibu belum pulang.",
-   o:["Kasih obat penurun panas yang ada di rumah.","Tunggu Ibu pulang. Nanti Ibu yang urus.","Tanya tetangga harus bagaimana.","Telepon Ibu, lalu kompres Adik."]},
-  {t:"Kakak memukul Adik sampai Adik menangis.",
-   o:["Pukul tangan Kakak supaya kapok.","Pisahkan mereka. Bilang ke Kakak: tidak boleh memukul. Lalu cek Adik.","Marahi Kakak dengan suara keras.","Biarkan saja. Namanya juga anak kecil."]},
-  {t:"Kakak tidak mau makan. Sudah 30 menit.",
-   o:["Paksa suapi sampai habis.","Kasih biskuit saja supaya kenyang.","Bilang: nanti dimarahi Ibu, lho.","Biarkan main dulu, coba lagi nanti. Lalu kasih tahu Ibu."]},
-];
-
-/* ---------- Helpers ---------- */
-const $app = document.getElementById("app");
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const LS = {
   get(k){ try{ return JSON.parse(localStorage.getItem(k)); }catch{ return null; } },
   set(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch{} },
   del(k){ try{ localStorage.removeItem(k); }catch{} },
 };
+
+// Fixed per-block shuffle so the same letter is not always in the same spot.
 function order(i){
   const a = ["D","I","S","C"]; let s = (i+1)*7919;
   for(let k=3;k>0;k--){ s = (s*9301+49297)%233280; const j = Math.floor(s/233280*(k+1)); [a[k],a[j]]=[a[j],a[k]]; }
   return a;
 }
-const ICON = {
-  speak:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>',
-  check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 10 17 19 7"/></svg>',
-  wa:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2c-1.6 0-3.1-.4-4.4-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.4.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.8 2.3 1 2.5c.1.2 1.6 2.5 4 3.5 1.5.6 2 .7 2.8.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.1-1.2l-.4-.2z"/></svg>',
-};
 
-// Answers travel as a short code inside a link to the owner's dashboard.
-const PAIR = "abcdefghijkl";
-function encPair(m,l){ const L="DISC", mi=L.indexOf(m), li=L.indexOf(l); return PAIR[mi*3 + (li>mi ? li-1 : li)]; }
-const clean = s => (String(s||"").normalize("NFD").replace(/[̀-ͯ]/g,"").trim().replace(/\s+/g,"_").replace(/[^A-Za-z0-9_]/g,"").slice(0,30)) || "~";
+// One DISC answer (most, least) = one letter a-l.
+const PAIR = "abcdefghijkl", DL = "DISC";
+function encPair(m, l){ const mi = DL.indexOf(m), li = DL.indexOf(l); return PAIR[mi*3 + (li > mi ? li-1 : li)]; }
+function decPair(ch){
+  const x = PAIR.indexOf(ch); if(x < 0) return null;
+  const mi = Math.floor(x/3), lj = x%3, li = lj >= mi ? lj+1 : lj;
+  return {m:DL[mi], l:DL[li]};
+}
+
+const clean = s => (String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").trim().replace(/\s+/g,"_").replace(/[^A-Za-z0-9_]/g,"").slice(0,30)) || "~";
+const unclean = s => s === "~" ? "" : String(s||"").replace(/_/g," ");
 function checksum(s){ let h=0; for(const ch of s){ h = (h*31 + ch.charCodeAt(0)) >>> 0; } return (h % 1296).toString(36).padStart(2,"0"); }
+const s36 = n => Math.max(0, Math.round(n||0)).toString(36);
+
+// tp2.<id>.<name>.<age>.<origin>.<bio><scen><likert><disc>.<sjt s>.<likert s>.<disc s>.<total s>.<finished s>.<check>
 function buildCode(c){
-  const disc = c.disc.map(a => encPair(a.m, a.l)).join("");
-  const scen = c.scen.join("");
-  const p1 = Math.round((c.part2At - c.startedAt)/1000), tot = Math.round((c.finishedAt - c.startedAt)/1000);
-  const body = ["tp1", c.id, clean(c.name), clean(c.age), clean(c.origin), disc+scen, p1.toString(36), tot.toString(36), Math.floor(c.finishedAt/1000).toString(36)].join(".");
+  const ans = c.bio.join("") + c.scen.join("") + c.lik.join("") + c.disc.map(a => encPair(a.m, a.l)).join("");
+  const body = ["tp2", c.id, clean(c.name), clean(c.age), clean(c.origin), ans,
+    s36(c.dur.sjt), s36(c.dur.lik), s36(c.dur.disc), s36((c.finishedAt - c.startedAt)/1000), s36(c.finishedAt/1000)].join(".");
   return body + "." + checksum(body);
 }
 
-const canSpeak = (() => { try{ return "speechSynthesis" in window; }catch{ return false; } })();
+// Returns a stored record, or null when the code is damaged. Also reads the first version (tp1).
+function decodeCode(raw){
+  try{
+    const m = String(raw||"").match(/tp[12]\.[A-Za-z0-9._~-]+/); if(!m) return null;
+    const parts = m[0].split(".");
+    const v = parts[0] === "tp2" ? 2 : 1;
+    const n = v === 2 ? 12 : 10;
+    if(parts.length !== n) return null;
+    if(checksum(parts.slice(0, n-1).join(".")) !== parts[n-1]) return null;
+    const [, id, name, age, origin, ans] = parts;
+    const num = i => parseInt(parts[i], 36);
+    const discFrom = str => [...str].map(ch => { const p = decPair(ch); if(!p) throw new Error("bad"); return p; });
+    const base = {id:"w"+id, name:unclean(name), age:unclean(age), origin:unclean(origin), notes:"", status:"Baru", source:"online"};
+
+    if(v === 1){
+      if(ans.length !== DISC.length + 10) return null;
+      const disc = discFrom(ans.slice(0, DISC.length));
+      const scen = [...ans.slice(DISC.length)].map(Number);
+      if(scen.some(x => !(x >= 0 && x <= 3))) return null;
+      const finishedAt = num(8)*1000, startedAt = finishedAt - num(7)*1000, discS = num(6);
+      return {...base, v:1, bio:null, lik:null, disc, scen, startedAt, finishedAt, createdAt:finishedAt,
+        dur:{disc:discS, sjt:Math.max(0, (finishedAt-startedAt)/1000 - discS), lik:0}};
+    }
+
+    const nb = BIO.length, ns = SCEN.length, nl = LIK.length;
+    if(ans.length !== nb + ns + nl + DISC.length) return null;
+    const digits = s => [...s].map(Number);
+    const bio = digits(ans.slice(0, nb));
+    const scen = digits(ans.slice(nb, nb+ns));
+    const lik = digits(ans.slice(nb+ns, nb+ns+nl));
+    const disc = discFrom(ans.slice(nb+ns+nl));
+    if(bio.some((x,i) => !(x >= 0 && x < BIO[i].o.length))) return null;
+    if(scen.some(x => !(x >= 0 && x <= 3))) return null;
+    if(lik.some(x => !(x >= 1 && x <= 5))) return null;
+    const finishedAt = num(10)*1000, startedAt = finishedAt - num(9)*1000;
+    return {...base, v:2, bio, scen, lik, disc, startedAt, finishedAt, createdAt:finishedAt,
+      dur:{sjt:num(6), lik:num(7), disc:num(8)}};
+  }catch{ return null; }
+}
+
+
+const DASHBOARD = "https://claude.ai/artifact/NQPgGTmu5d9p953pj9iBqh";
+const $app = document.getElementById("app");
+
+const ICON = {
+  speak:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>',
+  check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5 10 17 19 7"/></svg>',
+  wa:'<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2c-1.6 0-3.1-.4-4.4-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.4.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.8 2.3 1 2.5c.1.2 1.6 2.5 4 3.5 1.5.6 2 .7 2.8.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.1-1.2l-.4-.2z"/></svg>',
+};
+
+/* ---------- Flow ---------- */
+// Situations first while the candidate is fresh: they carry the most weight.
+const FLOW = [
+  {s:"welcome"},
+  {s:"bio", n:BIO.length, part:0},
+  {s:"intro1", part:1},
+  {s:"sjt", n:SCEN.length, part:1},
+  {s:"intro2", part:2},
+  {s:"lik", n:LIK.length, part:2},
+  {s:"intro3", part:3},
+  {s:"disc", n:DISC.length, part:3},
+  {s:"done"},
+];
+const TOTAL = BIO.length + SCEN.length + LIK.length + DISC.length;
+const PART_NAME = ["Tentang kamu","Bagian 1 dari 3 · Cerita jaga anak","Bagian 2 dari 3 · Tentang diri kamu","Bagian 3 dari 3 · Gaya kerja"];
+const KEY = "tp_kandidat_v2";
+
+const params = new URLSearchParams(location.search);
+const WA = (params.get("wa")||"").replace(/\D/g,"");
+const LINK_NAME = (params.get("n")||"").trim().slice(0,40);
+
+function fresh(){
+  return {id:Math.random().toString(36).slice(2,8), linkName:LINK_NAME, name:LINK_NAME, age:"", origin:"",
+    bio:Array(BIO.length).fill(null), scen:Array(SCEN.length).fill(null), lik:Array(LIK.length).fill(null), disc:Array(DISC.length).fill(null),
+    t:{}, startedAt:null, finishedAt:null, stage:"welcome", i:0};
+}
+let C = LS.get(KEY);
+const valid = C && Array.isArray(C.lik) && C.lik.length === LIK.length && Array.isArray(C.scen) && C.scen.length === SCEN.length
+  && Array.isArray(C.bio) && C.bio.length === BIO.length && Array.isArray(C.disc) && C.disc.length === DISC.length && FLOW.some(f => f.s === C.stage);
+// A link made for a different person starts a new test on this phone.
+if(!valid || (LINK_NAME && C.linkName !== LINK_NAME)) C = fresh();
+let resumed = C.stage !== "welcome" && C.stage !== "done";
+let busy = false;
+const save = () => LS.set(KEY, C);
+
+const flowIdx = () => FLOW.findIndex(f => f.s === C.stage);
+function answeredCount(){
+  return C.bio.filter(x => x != null).length + C.scen.filter(x => x != null).length
+    + C.lik.filter(x => x != null).length + C.disc.filter(x => x && x.m && x.l).length;
+}
+function markStart(){
+  const f = FLOW[flowIdx()];
+  if(f.n && !C.t[f.s+"0"]){ C.t[f.s+"0"] = Date.now(); if(!C.startedAt && f.s !== "bio") C.startedAt = Date.now(); }
+}
+
+/* ---------- Speech ---------- */
+const canSpeak = (() => { try{ return "speechSynthesis" in window && typeof SpeechSynthesisUtterance !== "undefined"; }catch{ return false; } })();
 function speak(text){
   try{
     const s = window.speechSynthesis; s.cancel();
@@ -172,167 +268,250 @@ function speak(text){
     s.speak(u);
   }catch{}
 }
-const speakBtn = text => canSpeak ? `<button class="icon-btn" data-act="speak" data-text="${esc(text)}">${ICON.speak}Dengarkan</button>` : "";
+const stopSpeech = () => { try{ window.speechSynthesis?.cancel(); }catch{} };
+const listen = text => canSpeak ? `<button class="listen" data-act="speak" data-text="${esc(text)}">${ICON.speak}Dengarkan</button>` : "";
 
-/* ---------- State ---------- */
-const params = new URLSearchParams(location.search);
-const WA = (params.get("wa")||"").replace(/\D/g,"");
-const HINT = (params.get("n")||"").slice(0,40);
-const KEY = "tp_kandidat";
-let C = LS.get(KEY);
-if(!C || !Array.isArray(C.disc) || C.disc.length !== DISC.length){
-  C = {id: Math.random().toString(36).slice(2,8), name:HINT, age:"", origin:"", startedAt:null, part2At:null, finishedAt:null,
-       disc:Array(DISC.length).fill(null), scen:Array(SCEN.length).fill(null), i:0, stage:"start"};
+/* ---------- Screens ---------- */
+function bar(label, sayText){
+  const pct = Math.round(answeredCount()/TOTAL*100);
+  return `<div class="bar">
+    <div class="bar-row"><div class="brand"><span class="mark">TP</span>${label ? `<span class="part">${esc(label)}</span>` : "Tes Calon Pengasuh"}</div>${sayText ? listen(sayText) : ""}</div>
+    ${C.stage !== "welcome" ? `<div class="progress" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100" aria-label="Kemajuan tes"><span style="width:${pct}%"></span></div>` : ""}
+  </div>`;
 }
-const save = () => LS.set(KEY, C);
+const backBtn = () => `<button class="btn ghost" data-act="back" aria-label="Kembali ke soal sebelumnya">Kembali</button>`;
 
-/* ---------- Views ---------- */
-const brand = `<div class="brand"><span class="brand-mark">TP</span>Tes Calon Pengasuh</div>`;
-
-function startView(){
-  return brand + `
-  <p class="big">Selamat datang!</p>
-  <p class="lead">Tes ini untuk lowongan <b>pengasuh anak</b>. Waktunya sekitar 20 menit. Kerjakan sendiri, di tempat yang tenang.</p>
-  <form id="startForm" class="howto" autocomplete="off">
-    <label>Siapa nama kamu?<input id="f-name" required maxlength="40" value="${esc(C.name)}" placeholder="contoh: Sari"></label>
-    <label>Umur berapa?<input id="f-age" inputmode="numeric" maxlength="3" value="${esc(C.age)}" placeholder="contoh: 28"></label>
-    <label>Asal dari mana?<input id="f-origin" maxlength="40" value="${esc(C.origin)}" placeholder="contoh: Klaten"></label>
-    <button class="btn" type="submit">Lanjut</button>
-  </form>`;
-}
-
-function introView(){
-  const say = `Halo, ${C.name}. Ini bukan ujian sekolah. Kami cuma ingin kenal kamu. Ada dua bagian. Bagian satu: dua puluh soal tentang diri kamu. Tidak ada jawaban benar atau salah. Bagian dua: sepuluh cerita tentang menjaga anak. Pilih yang biasa kamu lakukan. Jawab dengan jujur. Tidak usah buru-buru. Setelah selesai, kirim jawaban lewat WhatsApp.`;
-  return brand + `
-  <p class="big">Halo, ${esc(C.name)}!</p>
-  <div class="howto">
-    <p>Ini bukan ujian sekolah. Kami cuma ingin kenal kamu.</p>
-    <p>Ada <b>2 bagian</b>:</p>
-    <ol>
-      <li><b>Bagian 1:</b> 20 soal tentang diri kamu. Tidak ada jawaban benar atau salah.</li>
-      <li><b>Bagian 2:</b> 10 cerita tentang menjaga anak. Pilih yang biasa kamu lakukan.</li>
-    </ol>
-    <p>Jawab dengan jujur. Tidak usah buru-buru.</p>
-    <p>Setelah selesai, kirim jawaban lewat <b>WhatsApp</b>.</p>
-  </div>
-  <div class="row">${speakBtn(say)}</div>
-  <button class="btn" data-act="howto">Saya siap</button>`;
+function welcome(){
+  const say = "Selamat datang. Tes ini untuk lowongan pengasuh anak. Ada tiga bagian, waktunya sekitar dua puluh lima sampai tiga puluh lima menit. Kerjakan sendiri. Cari tempat yang tenang. Jawab dengan jujur. Kalau susah membaca, tekan tombol Dengarkan. Kalau terputus, buka lagi link ini. Jawaban kamu tetap tersimpan.";
+  return bar("", say) + `<main>
+    <div class="stack"><p class="eyebrow">Lowongan pengasuh anak</p><h1 class="title">Selamat datang!</h1></div>
+    <p class="lead">Tes ini membantu kami mengenal kamu. Waktunya sekitar <b>25 sampai 35 menit</b>.</p>
+    <div class="parts">
+      <div class="prt"><span class="num">1</span><div><b>Cerita jaga anak</b><span class="muted small">12 cerita. Pilih apa yang akan kamu lakukan.</span></div></div>
+      <div class="prt"><span class="num">2</span><div><b>Tentang diri kamu</b><span class="muted small">34 kalimat. Pilih seberapa cocok dengan kamu.</span></div></div>
+      <div class="prt"><span class="num">3</span><div><b>Gaya kerja</b><span class="muted small">20 soal. Pilih yang paling mirip dan paling tidak mirip.</span></div></div>
+    </div>
+    <div class="card">
+      <ul class="tips">
+        <li><span class="n">1</span><span>Kerjakan <b>sendiri</b>. Jangan dibantu orang lain.</span></li>
+        <li><span class="n">2</span><span>Cari tempat yang <b>tenang</b>.</span></li>
+        <li><span class="n">3</span><span>Jawab <b>jujur</b>. Jawaban jujur lebih penting daripada jawaban yang terlihat bagus.</span></li>
+        <li><span class="n">4</span><span>Susah membaca? Tekan tombol <b>Dengarkan</b>.</span></li>
+        <li><span class="n">5</span><span>Kalau terputus, buka lagi link ini. Jawaban kamu <b>tetap tersimpan</b>.</span></li>
+      </ul>
+    </div>
+    <form id="startForm" class="card" autocomplete="off" novalidate>
+      <label>Nama kamu<input id="f-name" maxlength="40" value="${esc(C.name)}" placeholder="contoh: Sari" autocomplete="given-name"></label>
+      <label>Umur<input id="f-age" inputmode="numeric" maxlength="2" value="${esc(C.age)}" placeholder="contoh: 28"></label>
+      <label>Asal (kota atau kabupaten)<input id="f-origin" maxlength="40" value="${esc(C.origin)}" placeholder="contoh: Klaten"></label>
+      <p class="err" id="formErr" hidden></p>
+      <button class="btn" type="submit">Mulai tes</button>
+    </form>
+  </main>`;
 }
 
-function howtoView(){
-  const say = "Cara menjawab bagian satu. Di setiap soal ada empat kalimat. Pertama, pilih satu yang paling mirip kamu. Warnanya jadi hijau. Kedua, pilih satu yang paling tidak mirip kamu. Warnanya jadi merah. Lalu tekan Lanjut.";
-  return `
-  <p class="eyebrow">Bagian 1 · Cara menjawab</p>
-  <div class="howto">
-    <p>Di setiap soal ada <b>4 kalimat</b>.</p>
-    <ol>
-      <li>Pilih 1 yang <span class="swatch m">PALING MIRIP</span> kamu. Warnanya jadi hijau.</li>
-      <li>Lalu pilih 1 yang <span class="swatch l">PALING TIDAK MIRIP</span> kamu. Warnanya jadi merah.</li>
-      <li>Tekan <b>Lanjut</b>.</li>
-    </ol>
-    <p>Kadang semua kalimat terasa mirip. Tidak apa-apa. Pilih yang <b>paling</b> mirip.</p>
-  </div>
-  <div class="row">${speakBtn(say)}</div>
-  <button class="btn" data-act="startdisc">Mulai soal 1</button>`;
+function choiceScreen({label, say, top, opts, sel, act, scale}){
+  return bar(label, say) + `<main>
+    ${resumed ? `<p class="toast">Melanjutkan tes kamu yang sebelumnya.</p>` : ""}
+    ${top}
+    <div class="opts ${scale ? "scale" : ""}" role="radiogroup">${opts.map((o, k) => `
+      <button class="opt ${sel===k ? "sel" : ""}" role="radio" aria-checked="${sel===k}" data-act="${act}" data-k="${k}">
+        ${scale ? `<span class="txt">${esc(o)}</span><span class="dots" aria-hidden="true">${[1,2,3,4,5].map(n => `<i class="${n<=k+1?"f":""}"></i>`).join("")}</span>`
+               : `<span class="letter" aria-hidden="true">${"ABCDEF"[k]}</span><span class="txt">${esc(o)}</span>`}
+      </button>`).join("")}
+    </div>
+  </main>
+  <div class="foot">${backBtn()}</div>`;
 }
 
-function discView(){
+function bioScreen(){
+  const b = BIO[C.i];
+  return choiceScreen({label:`Tentang kamu · ${C.i+1} dari ${BIO.length}`,
+    say: b.q + " " + b.o.map((o,k) => `${"ABCDEF"[k]}. ${o}`).join(". "),
+    top:`<p class="q">${esc(b.q)}</p>`, opts:b.o, sel:C.bio[C.i], act:"bio"});
+}
+
+function intro1(){
+  const say = "Bagian satu. Cerita menjaga anak. Ada dua belas cerita. Bayangkan kamu sedang kerja di rumah ini. Ada dua anak laki-laki. Kakak, umur dua setengah tahun. Adik, umur satu tahun. Untuk setiap cerita, pilih satu hal yang benar-benar akan kamu lakukan.";
+  return bar(PART_NAME[1], say) + `<main>
+    <p class="eyebrow">Bagian 1 dari 3</p>
+    <h1 class="title">Cerita jaga anak</h1>
+    <p class="lead">Ada <b>12 cerita</b>. Bayangkan kamu sedang kerja di rumah ini.</p>
+    <div class="card">
+      <p>Di rumah ini ada 2 anak laki-laki:</p>
+      <div class="parts">
+        <div class="prt"><span class="num">K</span><div><b>Kakak</b><span class="muted small">umur 2,5 tahun</span></div></div>
+        <div class="prt"><span class="num">A</span><div><b>Adik</b><span class="muted small">umur 1 tahun</span></div></div>
+      </div>
+    </div>
+    <p class="lead">Pilih <b>1 jawaban</b> yang <b>benar-benar akan kamu lakukan</b>.</p>
+    <button class="btn" data-act="next">Mulai cerita 1</button>
+  </main><div class="foot">${backBtn()}</div>`;
+}
+
+function sjtScreen(){
+  const s = SCEN[C.i];
+  return choiceScreen({label:`Cerita ${C.i+1} dari ${SCEN.length}`,
+    say: s.t + " Apa yang kamu lakukan? " + s.o.map((o,k) => `${"ABCD"[k]}. ${o}`).join(" "),
+    top:`<p class="story">${esc(s.t)}</p><p class="ask">Apa yang kamu lakukan?</p>`, opts:s.o, sel:C.scen[C.i], act:"sjt"});
+}
+
+function intro2(){
+  const say = "Bagian dua. Tentang diri kamu. Kamu akan membaca tiga puluh empat kalimat. Pilih seberapa cocok kalimat itu dengan diri kamu. Tidak ada jawaban benar atau salah. Jawab sesuai diri kamu yang sebenarnya.";
+  return bar(PART_NAME[2], say) + `<main>
+    <p class="eyebrow">Bagian 2 dari 3</p>
+    <h1 class="title">Tentang diri kamu</h1>
+    <p class="lead">Ada <b>34 kalimat</b>. Pilih seberapa <b>cocok</b> kalimat itu dengan diri kamu.</p>
+    <div class="example" aria-label="Contoh">
+      <p class="small muted">Contoh: <b>"Saya suka makan pedas."</b></p>
+      <p class="small">Kalau kamu suka sekali makan pedas, pilih:</p>
+      <div class="opt sel"><span class="txt">${LIKERT_SCALE[4]}</span><span class="dots">${[1,2,3,4,5].map(() => `<i class="f"></i>`).join("")}</span></div>
+      <p class="small">Kalau kamu tidak suka pedas, pilih <b>${LIKERT_SCALE[1]}</b> atau <b>${LIKERT_SCALE[0]}</b>.</p>
+    </div>
+    <p class="lead">Tidak ada jawaban benar atau salah. Jawab sesuai <b>diri kamu yang sebenarnya</b>.</p>
+    <button class="btn" data-act="next">Mulai</button>
+  </main><div class="foot">${backBtn()}</div>`;
+}
+
+function likScreen(){
+  const it = LIK[C.i];
+  return choiceScreen({label:`Kalimat ${C.i+1} dari ${LIK.length}`,
+    say: it.t + " Seberapa cocok dengan kamu? " + LIKERT_SCALE.join(". "),
+    top:`<p class="muted small">Seberapa cocok kalimat ini dengan kamu?</p><p class="q">${esc(it.t)}</p>`,
+    opts:LIKERT_SCALE, sel:C.lik[C.i] == null ? null : C.lik[C.i]-1, act:"lik", scale:true});
+}
+
+function intro3(){
+  const say = "Bagian tiga. Gaya kerja. Di setiap soal ada empat kalimat. Pertama, pilih satu yang paling mirip kamu. Warnanya jadi hijau. Kedua, pilih satu yang paling tidak mirip kamu. Warnanya jadi merah. Kalau semua terasa mirip, tidak apa-apa. Pilih yang paling mirip.";
+  return bar(PART_NAME[3], say) + `<main>
+    <p class="eyebrow">Bagian 3 dari 3 · Terakhir</p>
+    <h1 class="title">Gaya kerja</h1>
+    <p class="lead">Ada <b>20 soal</b>. Setiap soal ada <b>4 kalimat</b>.</p>
+    <div class="card">
+      <ul class="tips">
+        <li><span class="n">1</span><span>Pilih 1 yang <span class="swatch m">PALING MIRIP</span> kamu. Warnanya jadi hijau.</span></li>
+        <li><span class="n">2</span><span>Lalu pilih 1 yang <span class="swatch l">PALING TIDAK MIRIP</span> kamu. Warnanya jadi merah.</span></li>
+      </ul>
+    </div>
+    <div class="example" aria-label="Contoh">
+      <p class="small muted">Contoh hasilnya:</p>
+      <div class="opt m"><span class="txt">Saya suka masak.</span><span class="tag">PALING MIRIP</span></div>
+      <div class="opt"><span class="txt">Saya suka olahraga.</span></div>
+      <div class="opt l"><span class="txt">Saya suka nonton film.</span><span class="tag">TIDAK MIRIP</span></div>
+      <div class="opt"><span class="txt">Saya suka berkebun.</span></div>
+    </div>
+    <p class="lead">Kadang semua kalimat terasa mirip. Tidak apa-apa. Pilih yang <b>paling</b> mirip.</p>
+    <button class="btn" data-act="next">Mulai soal 1</button>
+  </main><div class="foot">${backBtn()}</div>`;
+}
+
+function discScreen(){
   const i = C.i, b = DISC[i], ord = order(i), cur = C.disc[i] || {};
-  const step = !cur.m ? `<div class="step m">Pilih yang PALING MIRIP kamu</div>`
-            : !cur.l ? `<div class="step l">Sekarang pilih yang PALING TIDAK MIRIP kamu</div>`
-            : `<div class="step ok">Sudah. Tekan Lanjut.</div>`;
-  const opts = ord.map(k => {
-    const cls = cur.m===k ? "m" : cur.l===k ? "l" : "";
-    const tag = cls==="m" ? `<span class="tag">PALING MIRIP</span>` : cls==="l" ? `<span class="tag">TIDAK MIRIP</span>` : "";
-    return `<button class="opt ${cls}" data-act="pick" data-k="${k}"><span class="txt">${esc(b.o[k])}</span>${tag}</button>`;
-  }).join("");
-  const say = (b.q ? b.q.replace("…","") + ". " : "") + ord.map((k,n)=>`Pilihan ${n+1}: ${b.o[k]}`).join(" ");
-  return `
-  <div class="spread"><p class="eyebrow">Soal ${i+1} dari 20</p>${speakBtn(say)}</div>
-  <div class="progress"><span style="width:${i/30*100}%"></span></div>
-  ${b.q ? `<p class="qtext">${esc(b.q)}</p>` : ""}
-  ${step}
-  <div class="opts">${opts}</div>
-  ${cur.m && cur.l ? `<p class="small muted">Mau ganti? Tekan lagi pilihan yang hijau atau merah.</p>` : ""}
-  <div class="nav"><button class="btn ghost" data-act="back">Kembali</button><button class="btn" data-act="next" ${cur.m && cur.l ? "" : "disabled"}>Lanjut</button></div>`;
-}
-
-function part2View(){
-  const say = "Bagian satu sudah selesai. Bagus. Bagian dua: ada sepuluh cerita tentang menjaga anak. Bayangkan kamu sedang kerja di rumah ini. Ada dua anak laki-laki. Kakak umur dua setengah tahun. Adik umur satu tahun. Untuk setiap cerita, pilih satu jawaban yang biasa kamu lakukan.";
-  return `
-  <div class="progress"><span style="width:${20/30*100}%"></span></div>
-  <p class="big">Bagian 1 selesai!</p>
-  <div class="howto">
-    <p><b>Bagian 2:</b> ada 10 cerita tentang menjaga anak.</p>
-    <p>Bayangkan kamu sedang kerja di rumah ini. Ada 2 anak laki-laki:</p>
-    <ol><li><b>Kakak</b>, umur 2,5 tahun</li><li><b>Adik</b>, umur 1 tahun</li></ol>
-    <p>Pilih <b>1 jawaban</b> yang biasa kamu lakukan.</p>
-  </div>
-  <div class="row">${speakBtn(say)}</div>
-  <button class="btn" data-act="startscen">Mulai cerita 1</button>`;
-}
-
-function scenView(){
-  const i = C.i, sc = SCEN[i], cur = C.scen[i];
-  const opts = sc.o.map((o,k) => `<button class="opt ${cur===k?"sel":""}" data-act="choose" data-k="${k}"><span class="letter">${"ABCD"[k]}</span><span class="txt">${esc(o)}</span></button>`).join("");
-  const say = sc.t + " Apa yang kamu lakukan? " + sc.o.map((o,k)=>`${"ABCD"[k]}. ${o}`).join(" ");
-  return `
-  <div class="spread"><p class="eyebrow">Cerita ${i+1} dari 10</p>${speakBtn(say)}</div>
-  <div class="progress"><span style="width:${(20+i)/30*100}%"></span></div>
-  <p class="story">${esc(sc.t)}</p>
-  <p class="qtext">Apa yang kamu lakukan?</p>
-  <div class="opts">${opts}</div>
-  <div class="nav"><button class="btn ghost" data-act="back">Kembali</button><button class="btn" data-act="next" ${cur!=null ? "" : "disabled"}>${i===SCEN.length-1 ? "Selesai" : "Lanjut"}</button></div>`;
+  const step = !cur.m ? `<div class="step m"><span class="dot"></span>Pilih yang PALING MIRIP kamu</div>`
+            : !cur.l ? `<div class="step l"><span class="dot"></span>Sekarang pilih yang PALING TIDAK MIRIP kamu</div>`
+            : `<div class="step ok">${ICON.check.replace("<svg", '<svg width="20" height="20"')}Sudah. Lanjut ke soal berikutnya…</div>`;
+  const say = (b.q ? b.q.replace("…","") + ". " : "") + ord.map((k,n) => `Pilihan ${n+1}: ${b.o[k]}`).join(" ");
+  return bar(`Soal ${i+1} dari ${DISC.length}`, say) + `<main>
+    ${resumed ? `<p class="toast">Melanjutkan tes kamu yang sebelumnya.</p>` : ""}
+    ${b.q ? `<p class="q">${esc(b.q)}</p>` : ""}
+    ${step}
+    <div class="opts">${ord.map(k => {
+      const cls = cur.m===k ? "m" : cur.l===k ? "l" : "";
+      const tag = cls==="m" ? `<span class="tag">PALING MIRIP</span>` : cls==="l" ? `<span class="tag">TIDAK MIRIP</span>` : "";
+      return `<button class="opt ${cls}" data-act="pick" data-k="${k}" aria-pressed="${!!cls}"><span class="txt">${esc(b.o[k])}</span>${tag}</button>`;
+    }).join("")}</div>
+    ${cur.m || cur.l ? `<p class="small muted">Mau ganti? Tekan lagi pilihan yang berwarna.</p>` : ""}
+  </main>
+  <div class="foot">${backBtn()}${cur.m && cur.l ? `<button class="btn" data-act="next">Lanjut</button>` : ""}</div>`;
 }
 
 function message(){
   return `Halo Bu/Pak, saya ${C.name} sudah selesai tes calon pengasuh. Ini jawaban saya:\n${DASHBOARD}#${buildCode(C)}`;
 }
 
-function doneView(){
+function doneScreen(){
   const msg = message();
   const href = `https://wa.me/${WA}?text=${encodeURIComponent(msg)}`;
-  return `
-  <div class="done-mark">${ICON.check}</div>
-  <p class="big center">Selesai!</p>
-  <p class="lead center">Terima kasih, ${esc(C.name)}.<br>Sekarang <b>kirim jawaban kamu</b> lewat WhatsApp.</p>
-  <a class="btn wa" href="${esc(href)}" target="_blank" rel="noopener">${ICON.wa}Kirim jawaban ke WhatsApp</a>
-  <p class="small muted center">${WA ? "Pesan akan terkirim ke nomor yang memberi link tes ini." : "Pilih kontak yang memberi link tes ini, lalu tekan kirim."} Jangan ubah isi pesannya.</p>
-  <details class="small">
-    <summary class="muted">Tombol tidak bisa? Salin pesan ini</summary>
-    <div style="display:flex;flex-direction:column;gap:10px;margin-top:10px">
-      <textarea id="msg" readonly>${esc(msg)}</textarea>
-      <button class="btn ghost" data-act="copy">Salin pesan</button>
-      <p id="copied" class="small muted" hidden>Sudah disalin. Tempel di WhatsApp, lalu kirim.</p>
+  return bar("Selesai") + `<main>
+    <div class="done-mark">${ICON.check}</div>
+    <h1 class="title center">Selesai! Terima kasih, ${esc(C.name)}.</h1>
+    <div class="card">
+      <p class="lead"><b>Satu langkah lagi:</b> kirim jawaban kamu lewat WhatsApp.</p>
+      <a class="btn wa" href="${esc(href)}" target="_blank" rel="noopener">${ICON.wa}Kirim jawaban ke WhatsApp</a>
+      <p class="small muted">${WA ? "Pesan akan dikirim ke nomor yang memberi link tes ini." : "Pilih kontak yang memberi link tes ini."} Tekan kirim, dan <b>jangan ubah isi pesannya</b>.</p>
     </div>
-  </details>`;
+    <details>
+      <summary class="small">Tombol tidak bisa? Salin pesan ini</summary>
+      <div class="card" style="margin-top:8px">
+        <textarea id="msg" readonly aria-label="Pesan jawaban">${esc(msg)}</textarea>
+        <button class="btn ghost" style="width:100%" data-act="copy">Salin pesan</button>
+        <p id="copied" class="small muted" hidden>Sudah disalin. Buka WhatsApp, tempel, lalu kirim.</p>
+      </div>
+    </details>
+    <p class="note center">Khusus Ibu/Bapak (perlu login): <a href="${esc(DASHBOARD + "#" + buildCode(C))}" target="_blank" rel="noopener">buka hasil</a></p>
+  </main>`;
 }
 
+const SCREENS = {welcome, bio:bioScreen, intro1, sjt:sjtScreen, intro2, lik:likScreen, intro3, disc:discScreen, done:doneScreen};
 function render(){
-  const v = {start:startView, intro:introView, howto:howtoView, disc:discView, part2:part2View, scen:scenView, done:doneView}[C.stage] || startView;
-  $app.innerHTML = v();
+  if(C.stage === "done" && (firstMissing() || !C.dur)){ const m = firstMissing(); if(m){ C.stage = m.s; C.i = m.i; } else finish(); }
+  markStart();
+  $app.innerHTML = SCREENS[C.stage]();
+  resumed = false;
 }
-function go(stage){ C.stage = stage; save(); render(); window.scrollTo(0,0); }
+function show(){ stopSpeech(); save(); render(); window.scrollTo(0, 0); busy = false; }
+
+// First unanswered item, if any (guards against a half-filled saved state).
+function firstMissing(){
+  for(const [s, arr] of [["bio",C.bio],["sjt",C.scen],["lik",C.lik],["disc",C.disc]]){
+    const i = arr.findIndex(x => x == null || (s === "disc" && !(x.m && x.l)));
+    if(i >= 0) return {s, i};
+  }
+  return null;
+}
+function finish(){
+  const span = s => { const a = C.t[s+"0"], b = C.t[s+"1"]; return a && b && b > a ? (b - a)/1000 : 0; };
+  C.dur = {sjt:span("sjt"), lik:span("lik"), disc:span("disc")};
+  C.finishedAt = C.finishedAt || Date.now();
+  C.startedAt = C.startedAt || C.t.sjt0 || C.finishedAt;
+}
+function next(){
+  const f = FLOW[flowIdx()];
+  if(f.n){ C.t[f.s+"1"] = Date.now(); if(C.i < f.n - 1){ C.i++; return show(); } }
+  const nf = FLOW[flowIdx() + 1]; if(!nf) return;
+  if(nf.s === "done"){
+    const miss = firstMissing();
+    if(miss){ C.stage = miss.s; C.i = miss.i; return show(); }
+    finish();
+  }
+  C.stage = nf.s; C.i = 0;
+  show();
+}
+function back(){
+  const f = FLOW[flowIdx()];
+  if(f.n && C.i > 0){ C.i--; return show(); }
+  const pf = FLOW[flowIdx() - 1];
+  if(!pf || C.stage === "done") return;
+  C.stage = pf.s; C.i = pf.n ? pf.n - 1 : 0; show();
+}
+// Answer, show the selection briefly, then move on.
+function answerThen(fn){ if(busy) return; busy = true; fn(); save(); render(); setTimeout(next, 320); }
 
 /* ---------- Actions ---------- */
 const act = {
   speak: ds => speak(ds.text),
-  howto(){ go("howto"); },
-  startdisc(){ C.startedAt = C.startedAt || Date.now(); C.i = 0; go("disc"); },
+  next(){ if(!busy) next(); },
+  back(){ if(!busy) back(); },
+  bio: ds => answerThen(() => { C.bio[C.i] = +ds.k; }),
+  sjt: ds => answerThen(() => { C.scen[C.i] = +ds.k; }),
+  lik: ds => answerThen(() => { C.lik[C.i] = +ds.k + 1; }),
   pick(ds){
-    const k = ds.k, cur = Object.assign({m:null,l:null}, C.disc[C.i]||{});
-    if(cur.m===k) cur.m=null; else if(cur.l===k) cur.l=null; else if(!cur.m) cur.m=k; else cur.l=k;
+    if(busy) return;
+    const k = ds.k, cur = Object.assign({m:null, l:null}, C.disc[C.i] || {});
+    if(cur.m === k) cur.m = null; else if(cur.l === k) cur.l = null; else if(!cur.m) cur.m = k; else if(!cur.l) cur.l = k; else return;
+    const wasDone = !!(C.disc[C.i]?.m && C.disc[C.i]?.l);
     C.disc[C.i] = cur; save(); render();
-  },
-  choose(ds){ C.scen[C.i] = +ds.k; save(); render(); },
-  startscen(){ C.part2At = C.part2At || Date.now(); C.i = 0; go("scen"); },
-  back(){
-    if(C.stage==="disc"){ if(C.i===0) return go("howto"); C.i--; return go("disc"); }
-    if(C.stage==="scen"){ if(C.i===0){ C.i = DISC.length-1; return go("disc"); } C.i--; return go("scen"); }
-  },
-  next(){
-    if(C.stage==="disc"){ if(C.i < DISC.length-1){ C.i++; return go("disc"); } return go("part2"); }
-    if(C.stage==="scen"){ if(C.i < SCEN.length-1){ C.i++; return go("scen"); } C.finishedAt = Date.now(); return go("done"); }
+    if(cur.m && cur.l && !wasDone){ busy = true; setTimeout(() => { busy = false; next(); }, 650); }
   },
   async copy(){
     const ta = document.getElementById("msg");
@@ -340,6 +519,7 @@ const act = {
     document.getElementById("copied").hidden = false;
   },
 };
+
 $app.addEventListener("click", e => {
   const b = e.target.closest("[data-act]"); if(!b || b.disabled) return;
   act[b.dataset.act]?.(b.dataset);
@@ -347,11 +527,18 @@ $app.addEventListener("click", e => {
 $app.addEventListener("submit", e => {
   if(e.target.id !== "startForm") return;
   e.preventDefault();
-  C.name = document.getElementById("f-name").value.trim();
-  C.age = document.getElementById("f-age").value.trim();
-  C.origin = document.getElementById("f-origin").value.trim();
-  if(C.name) go("intro");
+  const name = document.getElementById("f-name").value.trim();
+  const age = document.getElementById("f-age").value.replace(/\D/g,"");
+  const origin = document.getElementById("f-origin").value.trim();
+  const err = document.getElementById("formErr");
+  if(!name){ err.textContent = "Tulis nama kamu dulu."; err.hidden = false; return; }
+  if(age && (+age < 15 || +age > 80)){ err.textContent = "Umur sepertinya salah. Coba cek lagi."; err.hidden = false; return; }
+  C.name = name; C.age = age; C.origin = origin;
+  next();
 });
+
+/* tests and the owner preview read these */
+window.__tp = {get state(){ return C; }, reset(){ C = fresh(); show(); }};
 render();
 </script>
 </body>
