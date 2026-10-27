@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap">
 <style>
-/* Admin dashboard (web). Sign-in with a one-time email code; answer keys load from the database after sign-in. */
+/* Admin dashboard (web). 6-digit PIN checked on the server; answer keys load from the database after sign-in. */
 :root{
   --bg:#EEF4F2; --surface:#FFFFFF; --sunk:#E4ECE9; --ink:#132B27; --muted:#556964; --line:#D0DDD9;
   --accent:#15705D; --accent-ink:#FFFFFF; --accent-soft:#D5ECE5;
@@ -491,47 +491,31 @@ const statusOf = c => STATUSES.includes(c.status) ? c.status : "Baru";
 const statusCls = s => s==="Diterima" ? "good" : s==="Tidak lanjut" ? "bad" : s==="Baru" ? "neutral" : "warn";
 const bandColor = cls => `var(--${cls})`;
 
-/* ---------- Sign-in: one-time 6-digit email code (Supabase Auth). Session lives only in this tab. ---------- */
+/* ---------- Sign-in: 6-digit PIN checked by the server (bcrypt, 5 tries then a 15-minute lock).
+   The server hands back a session token that expires 30 minutes after the last use. ---------- */
+async function rpc(fn, args = {}){
+  const r = await fetch(SB_URL + "/rest/v1/rpc/" + fn, {method:"POST", headers:{apikey:SB_KEY, Authorization:"Bearer " + SB_KEY, "Content-Type":"application/json"}, body:JSON.stringify(args)});
+  const txt = await r.text(); let j = null; try{ j = txt ? JSON.parse(txt) : null; }catch{}
+  if(!r.ok) throw {status:r.status, code:j?.code || "", msg:j?.message || ""};
+  return j;
+}
 const Auth = {
-  s:null, refreshing:null,
-  load(){ try{ const v = JSON.parse(sessionStorage.getItem("tp_admin_session")); if(v && v.refresh_token) this.s = v; }catch{} },
-  save(){ try{ this.s ? sessionStorage.setItem("tp_admin_session", JSON.stringify(this.s)) : sessionStorage.removeItem("tp_admin_session"); }catch{} },
-  async call(path, body){
-    const r = await fetch(SB_URL + "/auth/v1/" + path, {method:"POST", headers:{apikey:SB_KEY, "Content-Type":"application/json"}, body:JSON.stringify(body)});
-    let j = null; try{ j = await r.json(); }catch{}
-    if(!r.ok) throw {status:r.status, code:j?.error_code || j?.code || "", msg:j?.msg || j?.error_description || ""};
-    return j;
-  },
-  set(j){ this.s = {access_token:j.access_token, refresh_token:j.refresh_token, expires_at:Date.now() + (j.expires_in || 3600)*1000, email:j.user?.email || this.s?.email || ""}; this.save(); },
-  sendCode(email){ return this.call("otp", {email, create_user:true}); },
-  async verify(email, token){ this.set(await this.call("verify", {type:"email", email, token})); },
-  async token(){
-    if(!this.s) throw {status:401};
-    if(Date.now() > this.s.expires_at - 60000){
-      this.refreshing = this.refreshing || this.call("token?grant_type=refresh_token", {refresh_token:this.s.refresh_token})
-        .then(j => this.set(j)).finally(() => { this.refreshing = null; });
-      await this.refreshing;
-    }
-    return this.s.access_token;
-  },
-  async logout(){
-    const t = this.s?.access_token; this.s = null; this.save();
-    if(t) try{ await fetch(SB_URL + "/auth/v1/logout", {method:"POST", headers:{apikey:SB_KEY, Authorization:"Bearer " + t}}); }catch{}
-  },
+  token:null,
+  load(){ try{ const t = sessionStorage.getItem("tp_admin_token"); if(/^[0-9a-f]{64}$/.test(t || "")) this.token = t; }catch{} },
+  save(){ try{ this.token ? sessionStorage.setItem("tp_admin_token", this.token) : sessionStorage.removeItem("tp_admin_token"); }catch{} },
+  async login(pin){ const j = await rpc("tes_pengasuh_login", {p_pin:pin}); if(j?.ok){ this.token = j.token; this.save(); } return j; },
+  async setup(code, pin){ const j = await rpc("tes_pengasuh_setup", {p_code:code, p_pin:pin}); if(j?.ok){ this.token = j.token; this.save(); } return j; },
+  async logout(){ const t = this.token; this.token = null; this.save(); if(t) try{ await rpc("tes_pengasuh_logout", {p_token:t}); }catch{} },
 };
-
-async function api(path, opt = {}){
-  let t;
-  try{ t = await Auth.token(); }catch{ return sessionEnded(); }
-  const r = await fetch(SB_URL + "/rest/v1/" + path, {...opt, headers:{apikey:SB_KEY, Authorization:"Bearer " + t, "Content-Type":"application/json", ...(opt.headers || {})}});
-  if(r.status === 401) return sessionEnded();
-  if(!r.ok){ let b = ""; try{ b = await r.text(); }catch{} throw {status:r.status, body:b}; }
-  if(r.status === 204 || r.headers.get("content-length") === "0") return null;
-  const txt = await r.text(); return txt ? JSON.parse(txt) : null;
+// Admin calls: any "unauthorized" answer means the session is over.
+async function api(fn, args = {}){
+  if(!Auth.token) return sessionEnded();
+  try{ return await rpc(fn, {p_token:Auth.token, ...args}); }
+  catch(e){ if(e.status === 403 || e.code === "28000") return sessionEnded(); throw e; }
 }
 function sessionEnded(){
-  Auth.s = null; Auth.save();
-  S.login = {stage:"email", email:LS.get("tp_admin_email") || "", err:"Sesi berakhir. Masuk lagi untuk melanjutkan."};
+  Auth.token = null; Auth.save();
+  S.login = {stage:"login", buf:"", err:"Sesi berakhir. Masukkan PIN lagi."};
   S.list = null; go("login");
   throw {status:401, ended:true};
 }
@@ -539,23 +523,20 @@ function sessionEnded(){
 /* ---------- Storage: one row per finished test ---------- */
 const Store = {
   async list(){
-    const rows = await api(`${TABLE}?select=id,code,status,notes,created_at&order=created_at.desc&limit=1000`);
+    const rows = await api("tes_pengasuh_list") || [];
     return rows.map(row => {
       const rec = decodeCode(row.code); if(!rec) return null;
       return {...rec, id:row.id, status:row.status, notes:row.notes, receivedAt:Date.parse(row.created_at)};
     }).filter(Boolean);
   },
-  patch(id, p){ return api(`${TABLE}?id=eq.${encodeURIComponent(id)}`, {method:"PATCH", headers:{Prefer:"return=minimal"}, body:JSON.stringify(p)}); },
-  remove(id){ return api(`${TABLE}?id=eq.${encodeURIComponent(id)}`, {method:"DELETE", headers:{Prefer:"return=minimal"}}); },
-  async insert(id, code){
-    try{ await api(TABLE, {method:"POST", headers:{Prefer:"return=minimal"}, body:JSON.stringify({id, code})}); return true; }
-    catch(e){ if(e.status === 409) return false; throw e; }
-  },
+  patch(id, p){ return api("tes_pengasuh_update", {p_id:id, p_status:p.status ?? null, p_notes:p.notes ?? null}); },
+  remove(id){ return api("tes_pengasuh_delete", {p_id:id}); },
+  insert(id, code){ return api("tes_pengasuh_import", {p_id:id, p_code:code}); },
 };
 
 /* ---------- State ---------- */
 const S = {
-  view:"loading", after:"home", login:{stage:"email", email:"", err:""}, sending:false, resendAt:0,
+  view:"loading", after:"home", login:{stage:"login", buf:"", err:""}, sending:false,
   list:null, selId:null, confirmDel:false, noteMsg:"", flash:null, importErr:"", loadedAt:0,
   cname:"", invite:"", copyMsg:"", tab:"hasil",
   filter:"all", fStatus:"all", sort:"skor", cmp:[], cache:new Map(),
@@ -587,29 +568,29 @@ function header(){
 const plainTop = () => `<div class="top"><div class="brand"><span class="mark">TP</span><div>Tes Calon Pengasuh<small>Admin</small></div></div></div>`;
 
 /* ---------- Views ---------- */
+const lockMsg = until => `Terlalu banyak PIN salah. Coba lagi jam ${fmtTime(Date.parse(until))}.`;
 function loginView(){
-  const L = S.login, wait = Math.max(0, Math.ceil((S.resendAt - Date.now())/1000));
-  const body = L.stage === "email" ? `
-    <form id="f-login" class="stack" novalidate>
-      <label>Email admin<input id="l-email" type="email" inputmode="email" autocomplete="email" maxlength="120" value="${esc(L.email)}" placeholder="nama@email.com" required></label>
-      <button class="btn" type="submit" ${S.sending ? "disabled" : ""}>${S.sending ? "Mengirim kode…" : "Kirim kode"}</button>
-    </form>` : `
-    <p class="small">Kode 6 digit sudah dikirim ke <b>${esc(L.email)}</b>. Cek inbox atau folder spam.</p>
-    <form id="f-code" class="stack" novalidate>
-      <label>Kode 6 digit<input id="l-code" class="otp" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]*" maxlength="6" placeholder="••••••" required></label>
-      <button class="btn" type="submit" ${S.sending ? "disabled" : ""}>${S.sending ? "Memeriksa…" : "Masuk"}</button>
-    </form>
-    <div class="login-actions">
-      <button class="link" data-act="resend" ${wait ? "disabled" : ""}>${wait ? `Kirim ulang (${wait} dtk)` : "Kirim ulang kode"}</button>
-      <button class="link" data-act="changeemail">Ganti email</button>
-    </div>`;
-  return plainTop() + `
+  const L = S.login;
+  if(L.stage === "setup") return plainTop() + `
   <div class="card" style="gap:16px;padding-block:24px">
-    <div class="stack" style="gap:6px"><h2>Masuk admin</h2><p class="muted small">Tanpa password. Kode sekali pakai dikirim ke email admin setiap kali masuk.</p></div>
-    ${body}
+    <div class="stack" style="gap:6px"><h2>Buat PIN admin</h2><p class="muted small">Masukkan kode setup sekali pakai, lalu buat PIN 6 angka. PIN tidak boleh mudah ditebak, seperti 123456 atau 111111.</p></div>
+    <form id="f-setup" class="stack" novalidate autocomplete="off">
+      <label>Kode setup<input id="s-code" maxlength="20" autocapitalize="characters" spellcheck="false" placeholder="XXXX-XXXX-XXXX" required></label>
+      <label>PIN baru (6 angka)<input id="s-pin" class="otp" type="password" inputmode="numeric" maxlength="6" pattern="[0-9]*" autocomplete="new-password" required></label>
+      <label>Ulangi PIN<input id="s-pin2" class="otp" type="password" inputmode="numeric" maxlength="6" pattern="[0-9]*" autocomplete="new-password" required></label>
+      <button class="btn" type="submit" ${S.sending ? "disabled" : ""}>${S.sending ? "Menyimpan…" : "Simpan PIN dan masuk"}</button>
+    </form>
     ${L.err ? `<p class="err" style="text-align:left" role="alert">${esc(L.err)}</p>` : ""}
+  </div>`;
+  const keys = [1,2,3,4,5,6,7,8,9].map(n => `<button data-act="digit" data-d="${n}" aria-label="${n}" ${S.sending ? "disabled" : ""}>${n}</button>`).join("");
+  return plainTop() + `
+  <div class="card" style="gap:16px;padding-block:26px">
+    <div class="stack" style="text-align:center;gap:6px"><h2>Masukkan PIN admin</h2><p class="muted small">${S.sending ? "Memeriksa…" : "6 angka"}</p></div>
+    <div class="dots" aria-label="${L.buf.length} dari 6 angka">${[0,1,2,3,4,5].map(i => `<span class="d ${L.buf.length > i ? "on" : ""}"></span>`).join("")}</div>
+    <p class="err" role="alert">${esc(L.err)}</p>
+    <div class="pad">${keys}<button class="fn" data-act="pinclear">Hapus</button><button data-act="digit" data-d="0" aria-label="0" ${S.sending ? "disabled" : ""}>0</button><button class="fn" data-act="pinback" aria-label="Hapus satu angka">Mundur</button></div>
   </div>
-  <p class="note">Demi keamanan, kamu otomatis keluar setelah 30 menit tidak aktif atau saat tab ditutup.</p>`;
+  <p class="note">Demi keamanan, 5 kali PIN salah mengunci masuk selama 15 menit, dan kamu otomatis keluar setelah 30 menit tidak aktif atau saat tab ditutup.</p>`;
 }
 const refreshLine = () => `<div class="row small muted" role="status"><span>${S.loadedAt ? "Diperbarui " + fmtTime(S.loadedAt) + "." : ""}</span><button class="link" data-act="refresh">Perbarui</button></div>`;
 
@@ -925,6 +906,15 @@ function metodeView(){
       <li>Urutan terbaik: tes ini, lalu wawancara memakai panduan wawancara di halaman hasil, lalu telepon majikan lama, lalu trial berbayar 1 sampai 3 hari, lalu masa percobaan 1 sampai 3 bulan.</li>
       <li>Saat trial, perhatikan langsung: nada bicara ke anak, penggunaan HP, kebersihan, dan apakah dia melapor tanpa ditanya.</li>
     </ul>
+  </section>
+  <section class="card">
+    <h2>Ganti PIN admin</h2>
+    <form id="f-chpin" class="stack" novalidate autocomplete="off">
+      <label>PIN lama<input id="c-old" class="otp" type="password" inputmode="numeric" maxlength="6" pattern="[0-9]*" autocomplete="current-password"></label>
+      <label>PIN baru<input id="c-new" class="otp" type="password" inputmode="numeric" maxlength="6" pattern="[0-9]*" autocomplete="new-password"></label>
+      <label>Ulangi PIN baru<input id="c-new2" class="otp" type="password" inputmode="numeric" maxlength="6" pattern="[0-9]*" autocomplete="new-password"></label>
+      <button class="btn ghost" type="submit">Ganti PIN</button>
+    </form>
   </section>`;
 }
 
@@ -949,11 +939,9 @@ async function loadList(){
 
 // After sign-in (or a restored tab session): check admin access, load the answer keys, open the dashboard.
 async function enter(){
-  const me = await api("tes_pengasuh_admins?select=email");
-  if(!me || !me.length){ await Auth.logout(); throw {code:"not_admin"}; }
-  const cfg = await api("tes_pengasuh_config?id=eq.scoring&select=data");
-  if(!cfg || !cfg.length) throw {code:"no_config"};
-  ({SCEN, LIK, BIO_NOTES} = hydrate(SCEN_TXT, LIK_TXT, cfg[0].data));
+  const cfg = await api("tes_pengasuh_config");
+  if(!cfg) throw {code:"no_config"};
+  ({SCEN, LIK, BIO_NOTES} = hydrate(SCEN_TXT, LIK_TXT, cfg));
   S.cache = new Map(); S.list = null;
   go(S.after || "home"); await loadList();
 }
@@ -972,12 +960,14 @@ async function importCode(text){
 
 /* ---------- Actions ---------- */
 const act = {
-  async resend(){
-    if(S.sending || Date.now() < S.resendAt) return;
-    await sendCode(S.login.email);
+  digit(ds){
+    const L = S.login; if(S.sending || L.buf.length >= 6) return;
+    L.buf += ds.d; L.err = ""; render();
+    if(L.buf.length === 6) signIn(L.buf);
   },
-  changeemail(){ S.login = {stage:"email", email:S.login.email, err:""}; render(); },
-  async logout(){ await Auth.logout(); S.list = null; S.selId = null; S.invite = ""; S.flash = null; S.cmp = []; S.login = {stage:"email", email:LS.get("tp_admin_email") || "", err:""}; go("login"); },
+  pinclear(){ S.login.buf = ""; render(); },
+  pinback(){ S.login.buf = S.login.buf.slice(0, -1); render(); },
+  async logout(){ await Auth.logout(); S.list = null; S.selId = null; S.invite = ""; S.flash = null; S.cmp = []; S.login = {stage:"login", buf:"", err:""}; go("login"); },
   tab(ds){
     S.flash = null; S.confirmDel = false; S.noteMsg = "";
     go(ds.t === "kirim" ? "kirim" : ds.t === "metode" ? "metode" : "home");
@@ -1048,65 +1038,74 @@ $app.addEventListener("keydown", e => {
 });
 $app.addEventListener("submit", e => {
   e.preventDefault();
-  if(e.target.id === "f-login"){
-    const email = document.getElementById("l-email").value.trim().toLowerCase();
-    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ S.login.err = "Tulis email yang benar."; S.login.email = email; render(); return; }
-    sendCode(email);
-  }
-  if(e.target.id === "f-code"){
-    const code = document.getElementById("l-code").value.replace(/\D/g, "");
-    if(code.length !== 6){ S.login.err = "Kode harus 6 angka."; render(); return; }
-    verifyCode(code);
-  }
+  if(e.target.id === "f-setup") setupPin();
+  if(e.target.id === "f-chpin") changePin();
 });
-$app.addEventListener("input", e => {
-  if(e.target.id === "l-code"){ e.target.value = e.target.value.replace(/\D/g, "").slice(0, 6); if(e.target.value.length === 6 && !S.sending) verifyCode(e.target.value); }
+document.addEventListener("keydown", e => {
+  if(S.view !== "login" || S.login.stage !== "login" || e.target.matches?.("input,textarea")) return;
+  if(/^[0-9]$/.test(e.key)) act.digit({d:e.key});
+  else if(e.key === "Backspace") act.pinback();
 });
 
-async function sendCode(email){
-  S.sending = true; S.login = {stage:S.login.stage, email, err:""}; render();
-  try{
-    await Auth.sendCode(email);
-    LS.set("tp_admin_email", email);
-    S.login = {stage:"code", email, err:""}; S.resendAt = Date.now() + 60000;
-  }catch(e){
-    S.login.err = e.status === 429 ? "Terlalu sering meminta kode. Tunggu sebentar lalu coba lagi."
-      : e.status === 422 || e.status === 403 ? "Email ini tidak bisa dipakai untuk masuk."
-      : "Gagal mengirim kode. Cek koneksi lalu coba lagi.";
-  }
-  S.sending = false; render();
-  if(S.login.stage === "code") document.getElementById("l-code")?.focus();
-}
-async function verifyCode(code){
-  S.sending = true; S.login.err = ""; render();
-  try{
-    await Auth.verify(S.login.email, code);
-    S.sending = false; lastActive = Date.now();
-    await enter();
+async function signIn(pin){
+  S.sending = true; render();
+  let j = null;
+  try{ j = await Auth.login(pin); }catch{ j = {ok:false, reason:"net"}; }
+  S.sending = false; S.login.buf = "";
+  if(j?.ok){
+    lastActive = Date.now();
+    try{ await enter(); }catch(e){ if(e?.ended) return; S.login.err = "Gagal memuat data. Coba lagi."; go("login"); }
     return;
-  }catch(e){
-    if(e?.code === "not_admin") S.login = {stage:"email", email:S.login.email, err:"Email ini tidak punya akses admin."};
-    else if(e?.code === "no_config") S.login.err = "Data penilaian belum siap. Hubungi pembuat dashboard.";
-    else if(e?.status === 429) S.login.err = "Terlalu banyak percobaan. Tunggu sebentar lalu coba lagi.";
-    else if(e?.status && e.status < 500) S.login.err = "Kode salah atau sudah kedaluwarsa. Coba lagi atau minta kode baru.";
-    else S.login.err = "Gagal masuk. Cek koneksi lalu coba lagi.";
   }
-  S.sending = false; if(S.view === "login") render(); else go("login");
+  S.login.err = j?.reason === "wrong" ? `PIN salah. Sisa ${j.left} kali sebelum dikunci 15 menit.`
+    : j?.reason === "locked" ? lockMsg(j.until)
+    : j?.reason === "no_pin" ? ""
+    : "Gagal masuk. Cek koneksi lalu coba lagi.";
+  if(j?.reason === "no_pin") S.login.stage = "setup";
+  render();
+}
+async function setupPin(){
+  const code = document.getElementById("s-code").value, pin = document.getElementById("s-pin").value, pin2 = document.getElementById("s-pin2").value;
+  const fail = t => { S.login.err = t; render(); };
+  if(!/^[0-9]{6}$/.test(pin)) return fail("PIN harus 6 angka.");
+  if(pin !== pin2) return fail("PIN dan ulangan PIN tidak sama.");
+  S.sending = true; render();
+  let j = null;
+  try{ j = await Auth.setup(code, pin); }catch{ j = {ok:false, reason:"net"}; }
+  S.sending = false;
+  if(j?.ok){ lastActive = Date.now(); S.login = {stage:"login", buf:"", err:""}; try{ await enter(); }catch(e){ if(!e?.ended) fail("Gagal memuat data. Coba lagi."); } return; }
+  fail(j?.reason === "weak_pin" ? "PIN terlalu mudah ditebak. Pakai kombinasi lain."
+    : j?.reason === "wrong" ? `Kode setup salah. Sisa ${j.left} kali sebelum dikunci 15 menit.`
+    : j?.reason === "locked" ? lockMsg(j.until)
+    : j?.reason === "no_setup" ? "Kode setup sudah dipakai. Masuk dengan PIN."
+    : "Gagal menyimpan. Cek koneksi lalu coba lagi.");
+  if(j?.reason === "no_setup"){ S.login.stage = "login"; render(); }
+}
+async function changePin(){
+  const old = document.getElementById("c-old").value, pin = document.getElementById("c-new").value, pin2 = document.getElementById("c-new2").value;
+  const done = (cls, t) => { S.flash = {cls, t}; render(); window.scrollTo(0, 0); };
+  if(!/^[0-9]{6}$/.test(pin)) return done("warn", "PIN baru harus 6 angka.");
+  if(pin !== pin2) return done("warn", "PIN baru dan ulangannya tidak sama.");
+  let j = null;
+  try{ j = await api("tes_pengasuh_change_pin", {p_old:old, p_new:pin}); }catch(e){ if(e?.ended) return; j = {ok:false, reason:"net"}; }
+  if(j?.ok) return done("good", "PIN sudah diganti. Perangkat lain yang masih masuk sudah dikeluarkan.");
+  done(j?.reason === "locked" ? "bad" : "warn", j?.reason === "weak_pin" ? "PIN baru terlalu mudah ditebak."
+    : j?.reason === "wrong" ? `PIN lama salah. Sisa ${j.left} kali sebelum dikunci 15 menit.`
+    : j?.reason === "locked" ? lockMsg(j.until) : "Gagal mengganti PIN. Coba lagi.");
 }
 
 // Sign out after 30 minutes without activity.
 let lastActive = Date.now();
 ["click","keydown","touchstart","scroll"].forEach(ev => window.addEventListener(ev, () => { lastActive = Date.now(); }, {passive:true}));
 setInterval(() => {
-  if(S.view === "login" && S.login.stage === "code" && S.resendAt > Date.now() - 2000) render();
-  if(Auth.s && Date.now() - lastActive > IDLE_MS){
+  if(Auth.token && Date.now() - lastActive > IDLE_MS){
     Auth.logout(); S.list = null; S.cmp = [];
-    S.login = {stage:"email", email:LS.get("tp_admin_email") || "", err:"Kamu keluar otomatis karena tidak aktif 30 menit."};
+    S.login = {stage:"login", buf:"", err:"Kamu keluar otomatis karena tidak aktif 30 menit."};
     go("login");
   }
 }, 1000);
 document.addEventListener("visibilitychange", () => {
-  if(document.visibilityState === "visible" && Auth.s && S.view === "home" && Date.now() - S.loadedAt > 60000) loadList();
+  if(document.visibilityState === "visible" && Auth.token && S.view === "home" && Date.now() - S.loadedAt > 60000) loadList();
 });
 
 /* ---------- Boot ---------- */
@@ -1114,8 +1113,9 @@ document.addEventListener("visibilitychange", () => {
   const h = (location.hash || "").slice(1);
   S.after = h === "kirim" ? "kirim" : h === "metode" ? "metode" : "home";
   Auth.load(); render();
-  if(Auth.s){ try{ await enter(); return; }catch(e){ if(e?.ended) return; await Auth.logout(); } }
-  S.login = {stage:"email", email:LS.get("tp_admin_email") || "", err:""};
+  if(Auth.token){ try{ await enter(); return; }catch(e){ if(e?.ended) return; await Auth.logout(); } }
+  let st = null; try{ st = await rpc("tes_pengasuh_status"); }catch{}
+  S.login = {stage: st && !st.pin_set ? "setup" : "login", buf:"", err: st?.locked_until ? lockMsg(st.locked_until) : st ? "" : "Tidak bisa terhubung. Cek koneksi lalu muat ulang halaman."};
   go("login");
 })();
 </script>
