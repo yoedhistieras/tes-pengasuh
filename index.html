@@ -15,13 +15,13 @@
   --bg:#EEF4F2; --surface:#FFFFFF; --sunk:#E3ECE9; --ink:#132B27; --muted:#556964; --line:#D0DDD9;
   --accent:#15705D; --accent-ink:#FFFFFF; --accent-soft:#D5ECE5;
   --most:#1C8748; --most-soft:#DBF1E3; --least:#BD3A2A; --least-soft:#F8DFDA;
-  --wa:#1FA855; --shadow:0 1px 2px rgb(19 43 39 / .06), 0 4px 16px rgb(19 43 39 / .06);
+  --shadow:0 1px 2px rgb(19 43 39 / .06), 0 4px 16px rgb(19 43 39 / .06);
   --font:'Lexend', ui-rounded, 'Segoe UI', system-ui, sans-serif;
 }
 @media (prefers-color-scheme: dark){:root{
   --bg:#0D1715; --surface:#14211D; --sunk:#1B2A26; --ink:#E3EEEA; --muted:#9AB0AA; --line:#283A35;
   --accent:#4DC1A5; --accent-ink:#06201A; --accent-soft:#163A31;
-  --most:#4CC27F; --most-soft:#163724; --least:#F07A6A; --least-soft:#3D1E19; --wa:#2BC066;
+  --most:#4CC27F; --most-soft:#163724; --least:#F07A6A; --least-soft:#3D1E19;
   --shadow:none; color-scheme:dark}}
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
@@ -65,7 +65,6 @@ main{flex:1;display:flex;flex-direction:column;gap:18px;padding-block:8px 28px}
 .btn:active{transform:scale(.98)}
 .btn[disabled]{opacity:.4;cursor:not-allowed}
 .btn.ghost{background:var(--surface);color:var(--ink);border:1px solid var(--line);width:auto;flex:none;padding-inline:18px}
-.btn.wa{background:var(--wa);color:#fff;font-size:1.15rem;min-height:64px}
 .btn svg{width:24px;height:24px;flex:none}
 .listen{display:inline-flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:7px 14px;font-weight:500;font-size:.88rem;flex:none}
 .listen svg{width:18px;height:18px}
@@ -107,6 +106,9 @@ textarea{min-height:120px;font-size:.85rem}
 .center{text-align:center}
 .done-mark{width:76px;height:76px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;margin:8px auto 0}
 .done-mark svg{width:40px;height:40px}
+.done-mark.warn{background:var(--least-soft);color:var(--least);font-size:2.2rem;font-weight:700}
+.spin{width:34px;height:34px;border-radius:50%;border:4px solid var(--accent-soft);border-top-color:var(--accent);animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
 details summary{cursor:pointer;color:var(--muted);padding:6px 0}
 .note{font-size:.82rem;color:var(--muted)}
 .toast{background:var(--accent-soft);color:var(--accent);padding:10px 14px;border-radius:12px;font-size:.92rem;font-weight:500}
@@ -125,7 +127,7 @@ const LIKERT_SCALE = ["Sangat tidak cocok","Tidak cocok","Ragu-ragu","Cocok","Sa
 const LIK = [{"t":"Saya menyelesaikan kerjaan sampai beres."},{"t":"Saya sabar menghadapi anak yang rewel."},{"t":"Saya gampang panik."},{"t":"Saya mengaku kalau saya salah."},{"t":"Saya tidak pernah marah sama sekali, seumur hidup."},{"t":"Saya sering lupa tugas yang sudah disuruh."},{"t":"Saya gampang kesal kalau anak tidak menurut."},{"t":"Saya tetap tenang kalau ada masalah."},{"t":"Kalau tidak ketahuan, mengambil sedikit barang majikan itu tidak apa-apa."},{"t":"Saya menaruh barang kembali di tempatnya."},{"t":"Saya peduli kalau ada orang yang sedih."},{"t":"Saya tidak pernah bohong, satu kali pun."},{"t":"Saya gampang marah."},{"t":"Saya tetap berkata jujur, walaupun bisa kena marah."},{"t":"Saya suka menunda kerjaan."},{"t":"Soal ini untuk cek. Tekan jawaban \"Tidak cocok\"."},{"t":"Saya bicara dengan suara lembut ke anak kecil."},{"t":"Setelah dimarahi, saya cepat semangat lagi."},{"t":"Kadang saya pura-pura sakit supaya bisa libur."},{"t":"Saya suka semua orang yang pernah saya temui."},{"t":"Saya bangun dan datang tepat waktu."},{"t":"Saya membalas kalau ada orang yang kasar ke saya."},{"t":"Saya sering merasa sedih atau cemas."},{"t":"Saya mau bohong sedikit kalau itu menguntungkan saya."},{"t":"Saya kerja asal cepat selesai, tidak rapi."},{"t":"Saya tidak pernah malas, satu hari pun."},{"t":"Saya kurang suka lama-lama bersama anak kecil."},{"t":"Kalau ada kejadian mendadak, saya jadi bingung dan panik."},{"t":"Kerjaan yang saya mulai, pasti saya selesaikan sampai beres."},{"t":"Saya tidak pernah membicarakan orang lain di belakangnya."},{"t":"Kalau anak menangis lama, saya tetap sabar."},{"t":"Kalau saya berbuat salah, saya langsung bilang."},{"t":"Suasana hati saya biasanya baik."},{"t":"Saya tidak mau mengambil barang orang lain, sekecil apa pun."}];
 const DISC = [{"q":"","o":{"D":"Saya suka kerja cepat, supaya cepat selesai.","I":"Saya senang ngobrol dengan orang di rumah.","S":"Saya suka kerjaan yang sama setiap hari.","C":"Saya suka barang ada di tempatnya."}},{"q":"Kalau ada masalah di rumah…","o":{"D":"Saya langsung cari jalan keluar sendiri.","I":"Saya cerita ke orang lain supaya dibantu.","S":"Saya tenang dulu, tidak buru-buru.","C":"Saya pikir dulu baik-baik, baru bertindak."}},{"q":"Teman bilang saya orangnya…","o":{"D":"Berani.","I":"Lucu dan ramai.","S":"Sabar.","C":"Teliti."}},{"q":"Kalau disuruh dengan cara yang menurut saya kurang bagus…","o":{"D":"Saya bilang cara saya lebih cepat.","I":"Saya ajak ngobrol baik-baik.","S":"Saya ikuti saja. Tidak enak kalau membantah.","C":"Saya tanya alasannya, supaya paham."}},{"q":"Waktu kerja, saya paling senang kalau…","o":{"D":"Kerjaan selesai lebih cepat dari waktunya.","I":"Suasana rumah ramai dan ceria.","S":"Semua orang di rumah akur dan tenang.","C":"Semua kerjaan rapi dan tidak ada yang salah."}},{"q":"","o":{"D":"Saya tidak suka menunggu lama.","I":"Saya gampang akrab dengan orang baru.","S":"Saya perlu waktu untuk biasa di tempat baru.","C":"Saya suka ada daftar kerjaan yang jelas."}},{"q":"Kalau saya sedang capek…","o":{"D":"Saya tetap paksa sampai selesai.","I":"Saya cari teman ngobrol supaya semangat lagi.","S":"Saya diam dan tetap kerja pelan-pelan.","C":"Saya atur lagi, mana yang harus duluan."}},{"q":"Saya paling tidak suka kalau…","o":{"D":"Disuruh terus, tidak boleh pakai cara sendiri.","I":"Kerja sendirian, tidak ada teman bicara.","S":"Aturan rumah sering berubah-ubah.","C":"Kerjaan dibuat asal-asalan."}},{"q":"Kalau main dengan anak kecil…","o":{"D":"Saya ajak main yang aktif, seperti kejar-kejaran.","I":"Saya nyanyi dan bikin dia ketawa.","S":"Saya temani dia main apa saja yang dia mau.","C":"Saya ajari dia hal baru, seperti warna atau angka."}},{"q":"Kalau ada aturan baru di rumah…","o":{"D":"Saya coba dulu. Kalau tidak cocok, saya bilang.","I":"Saya tanya-tanya ke orang lain di rumah.","S":"Saya perlu waktu supaya biasa.","C":"Saya catat supaya tidak lupa."}},{"q":"","o":{"D":"Saya suka jadi yang memimpin.","I":"Saya senang dipuji kalau kerja bagus.","S":"Saya senang membantu orang lain.","C":"Saya suka kerja yang hasilnya pasti."}},{"q":"Kalau ada orang marah ke saya…","o":{"D":"Saya jawab dan jelaskan saat itu juga.","I":"Saya coba bikin suasana enak lagi.","S":"Saya diam dan dengarkan.","C":"Saya cek dulu, apa saya memang salah."}},{"q":"Waktu hari libur, saya paling suka…","o":{"D":"Pergi ke tempat baru.","I":"Kumpul dan ngobrol dengan teman.","S":"Istirahat atau kumpul dengan keluarga.","C":"Membereskan barang-barang saya."}},{"q":"","o":{"D":"Saya cepat ambil keputusan.","I":"Saya gampang semangat.","S":"Saya tidak gampang marah.","C":"Saya hati-hati sebelum bicara."}},{"q":"Kalau anak menangis terus…","o":{"D":"Saya gendong dan bawa keluar supaya diam.","I":"Saya ajak ngomong dan bercanda supaya dia lupa.","S":"Saya peluk dan tunggu sampai dia tenang.","C":"Saya pakai cara yang sudah diajarkan Ibu."}},{"q":"Waktu belajar hal baru…","o":{"D":"Saya langsung coba sendiri.","I":"Saya cepat paham kalau diajak ngobrol.","S":"Saya perlu dicontohkan dulu, pelan-pelan.","C":"Saya perlu tahu langkahnya satu per satu."}},{"q":"Orang yang kenal saya kadang bilang…","o":{"D":"Saya keras kepala.","I":"Saya cerewet.","S":"Saya terlalu mengalah.","C":"Saya terlalu banyak tanya."}},{"q":"Kalau kerja bersama orang lain…","o":{"D":"Saya suka yang mengatur pembagian kerja.","I":"Saya yang bikin suasana jadi seru.","S":"Saya bantu di mana saja yang perlu.","C":"Saya pastikan semua dikerjakan dengan benar."}},{"q":"Saya merasa puas kalau…","o":{"D":"Saya berhasil mengerjakan hal yang susah.","I":"Orang di rumah senang dengan saya.","S":"Saya bisa kerja lama di satu tempat.","C":"Hasil kerja saya rapi dan bersih."}},{"q":"","o":{"D":"Saya suka tantangan.","I":"Saya suka suasana ramai.","S":"Saya suka suasana tenang.","C":"Saya suka suasana teratur."}}];
 /* Shared by both pages: helpers, DISC block order and the answer code that travels
-   from the candidate page to the admin dashboard inside a WhatsApp link. */
+   from the candidate page to the admin dashboard inside a link. */
 
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const LS = {
@@ -204,13 +206,14 @@ function decodeCode(raw){
 }
 
 
-const DASHBOARD = "https://claude.ai/artifact/NQPgGTmu5d9p953pj9iBqh";
+// Answers go straight into an insert-only table; this key cannot read anything back.
+const SB_URL = "https://qewpwhbhceqrsimntmzc.supabase.co";
+const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFld3B3aGJoY2VxcnNpbW50bXpjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA4Mzg3MDIsImV4cCI6MjEwNjQxNDcwMn0.zGMdLcY9lJ5Gu_uLDOi5MBpCFjPLi-jLC-qT4ZPOO7c";
 const $app = document.getElementById("app");
 
 const ICON = {
   speak:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>',
   check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5 10 17 19 7"/></svg>',
-  wa:'<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2c-1.6 0-3.1-.4-4.4-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.4.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.8 2.3 1 2.5c.1.2 1.6 2.5 4 3.5 1.5.6 2 .7 2.8.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.1-1.2l-.4-.2z"/></svg>',
 };
 
 /* ---------- Flow ---------- */
@@ -231,11 +234,10 @@ const PART_NAME = ["Tentang kamu","Bagian 1 dari 3 · Cerita jaga anak","Bagian 
 const KEY = "tp_kandidat_v2";
 
 const params = new URLSearchParams(location.search);
-const WA = (params.get("wa")||"").replace(/\D/g,"");
 const LINK_NAME = (params.get("n")||"").trim().slice(0,40);
 
 function fresh(){
-  return {id:Math.random().toString(36).slice(2,8), linkName:LINK_NAME, name:LINK_NAME, age:"", origin:"",
+  return {id:Array.from({length:8}, () => "abcdefghijklmnopqrstuvwxyz0123456789"[Math.random()*36|0]).join(""), linkName:LINK_NAME, name:LINK_NAME, age:"", origin:"",
     bio:Array(BIO.length).fill(null), scen:Array(SCEN.length).fill(null), lik:Array(LIK.length).fill(null), disc:Array(DISC.length).fill(null),
     t:{}, startedAt:null, finishedAt:null, stage:"welcome", i:0};
 }
@@ -425,32 +427,51 @@ function discScreen(){
   <div class="foot">${backBtn()}${cur.m && cur.l ? `<button class="btn" data-act="next">Lanjut</button>` : ""}</div>`;
 }
 
-function message(){
-  return `Halo Bu/Pak, saya ${C.name} sudah selesai tes calon pengasuh. Ini jawaban saya:\n${DASHBOARD}#${buildCode(C)}`;
-}
-
 function doneScreen(){
-  const msg = message();
-  const href = `https://wa.me/${WA}?text=${encodeURIComponent(msg)}`;
-  return bar("Selesai") + `<main>
+  const state = C.saved ? "saved" : sending ? "sending" : C.sendErr ? "error" : "sending";
+  if(state === "saved") return bar("Selesai") + `<main>
     <div class="done-mark">${ICON.check}</div>
-    <h1 class="title center">Selesai! Terima kasih, ${esc(C.name)}.</h1>
-    <div class="card">
-      <p class="lead"><b>Satu langkah lagi:</b> kirim jawaban kamu lewat WhatsApp.</p>
-      <a class="btn wa" href="${esc(href)}" target="_blank" rel="noopener">${ICON.wa}Kirim jawaban ke WhatsApp</a>
-      <p class="small muted">${WA ? "Pesan akan dikirim ke nomor yang memberi link tes ini." : "Pilih kontak yang memberi link tes ini."} Tekan kirim, dan <b>jangan ubah isi pesannya</b>.</p>
+    <h1 class="title center">Terima kasih, ${esc(C.name)}!</h1>
+    <div class="card center">
+      <p class="lead"><b>Jawaban kamu sudah terkirim.</b></p>
+      <p class="muted">Kamu boleh menutup halaman ini. Kami akan menghubungi kamu lewat WhatsApp atau telepon.</p>
     </div>
-    <details>
-      <summary class="small">Tombol tidak bisa? Salin pesan ini</summary>
-      <div class="card" style="margin-top:8px">
-        <textarea id="msg" readonly aria-label="Pesan jawaban">${esc(msg)}</textarea>
-        <button class="btn ghost" style="width:100%" data-act="copy">Salin pesan</button>
-        <p id="copied" class="small muted" hidden>Sudah disalin. Buka WhatsApp, tempel, lalu kirim.</p>
-      </div>
-    </details>
-    <p class="note center">Khusus Ibu/Bapak (perlu login): <a href="${esc(DASHBOARD + "#" + buildCode(C))}" target="_blank" rel="noopener">buka hasil</a></p>
+  </main>`;
+  if(state === "error") return bar("Hampir selesai") + `<main>
+    <div class="done-mark warn" aria-hidden="true">!</div>
+    <h1 class="title center">Jawaban belum terkirim</h1>
+    <div class="card">
+      <p class="lead">Sepertinya internet sedang mati atau lemah.</p>
+      <p class="muted">Jawaban kamu <b>aman tersimpan di HP ini</b>. Nyalakan internet, lalu tekan tombol di bawah. Halaman ini juga akan mencoba lagi sendiri.</p>
+      <button class="btn" data-act="resend">Kirim ulang</button>
+    </div>
+  </main>`;
+  return bar("Mengirim") + `<main>
+    <div class="done-mark" aria-hidden="true"><span class="spin"></span></div>
+    <h1 class="title center">Mengirim jawaban…</h1>
+    <p class="lead center muted">Tunggu sebentar. Jangan tutup halaman ini dulu.</p>
   </main>`;
 }
+
+// Save the finished test. A repeated send of the same test is accepted as already saved.
+let sending = false;
+async function submit(){
+  if(C.saved || sending || C.stage !== "done") return;
+  sending = true; C.sendErr = ""; if(C.stage === "done") render();
+  try{
+    const res = await fetch(SB_URL + "/rest/v1/tes_pengasuh_hasil", {
+      method:"POST",
+      headers:{"apikey":SB_KEY, "Authorization":"Bearer " + SB_KEY, "Content-Type":"application/json", "Prefer":"return=minimal"},
+      body:JSON.stringify({id:C.id, code:buildCode(C)}),
+    });
+    if(res.ok || res.status === 409) C.saved = Date.now();
+    else C.sendErr = "http " + res.status;
+  }catch{ C.sendErr = "offline"; }
+  sending = false; save();
+  if(C.stage === "done") render();
+}
+window.addEventListener("online", submit);
+setInterval(() => { if(C.stage === "done" && !C.saved && !sending) submit(); }, 20000);
 
 const SCREENS = {welcome, bio:bioScreen, intro1, sjt:sjtScreen, intro2, lik:likScreen, intro3, disc:discScreen, done:doneScreen};
 function render(){
@@ -486,6 +507,7 @@ function next(){
   }
   C.stage = nf.s; C.i = 0;
   show();
+  if(nf.s === "done") submit();
 }
 function back(){
   const f = FLOW[flowIdx()];
@@ -513,11 +535,7 @@ const act = {
     C.disc[C.i] = cur; save(); render();
     if(cur.m && cur.l && !wasDone){ busy = true; setTimeout(() => { busy = false; next(); }, 650); }
   },
-  async copy(){
-    const ta = document.getElementById("msg");
-    try{ await navigator.clipboard.writeText(ta.value); }catch{ ta.select(); try{ document.execCommand("copy"); }catch{} }
-    document.getElementById("copied").hidden = false;
-  },
+  resend(){ submit(); },
 };
 
 $app.addEventListener("click", e => {
@@ -540,6 +558,7 @@ $app.addEventListener("submit", e => {
 /* tests and the owner preview read these */
 window.__tp = {get state(){ return C; }, reset(){ C = fresh(); show(); }};
 render();
+if(C.stage === "done" && !C.saved) submit();
 </script>
 </body>
 </html>
