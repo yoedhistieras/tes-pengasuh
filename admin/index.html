@@ -1,0 +1,1124 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#15705D">
+<title>Admin · Tes Calon Pengasuh</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap">
+<style>
+/* Admin dashboard (web). Sign-in with a one-time email code; answer keys load from the database after sign-in. */
+:root{
+  --bg:#EEF4F2; --surface:#FFFFFF; --sunk:#E4ECE9; --ink:#132B27; --muted:#556964; --line:#D0DDD9;
+  --accent:#15705D; --accent-ink:#FFFFFF; --accent-soft:#D5ECE5;
+  --good:#1C8748; --good-soft:#DBF1E3; --warn:#9A6210; --warn-soft:#F6EAD0; --bad:#BD3A2A; --bad-soft:#F8DFDA;
+  --dD:#C8483A; --dI:#C98F12; --dS:#2B8D5C; --dC:#3667B3;
+  --shadow:0 1px 2px rgb(19 43 39 / .05), 0 4px 14px rgb(19 43 39 / .05);
+  --font:'Lexend', ui-rounded, 'Segoe UI', system-ui, sans-serif;
+  --r:16px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0D1715; --surface:#14211D; --sunk:#1B2A26; --ink:#E3EEEA; --muted:#9AB0AA; --line:#283A35;
+  --accent:#4DC1A5; --accent-ink:#06201A; --accent-soft:#163A31;
+  --good:#4CC27F; --good-soft:#163724; --warn:#E3AC50; --warn-soft:#382B13; --bad:#F07A6A; --bad-soft:#3D1E19;
+  --dD:#E86F61; --dI:#E6B445; --dS:#55BF8A; --dC:#6F9BE2; --shadow:none; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0D1715; --surface:#14211D; --sunk:#1B2A26; --ink:#E3EEEA; --muted:#9AB0AA; --line:#283A35;
+  --accent:#4DC1A5; --accent-ink:#06201A; --accent-soft:#163A31;
+  --good:#4CC27F; --good-soft:#163724; --warn:#E3AC50; --warn-soft:#382B13; --bad:#F07A6A; --bad-soft:#3D1E19;
+  --dD:#E86F61; --dI:#E6B445; --dS:#55BF8A; --dC:#6F9BE2; --shadow:none; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{margin:0;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);background:var(--bg);color:var(--ink);font-family:var(--font);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top, 0px);z-index:10;background:var(--bg)}
+.wrap{max-width:640px;margin:0 auto;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:16px 56px;display:flex;flex-direction:column;gap:16px}
+.wrap.wide{max-width:960px}
+h1,h2,h3{margin:0;text-wrap:balance;line-height:1.25}
+h1{font-size:1.55rem;font-weight:600}
+h2{font-size:1.12rem;font-weight:600}
+h3{font-size:.98rem;font-weight:600}
+p{margin:0}
+.muted{color:var(--muted)}
+.small{font-size:.86rem}
+.eyebrow{font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.stack{display:flex;flex-direction:column;gap:12px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.row.nowrap{flex-wrap:nowrap;flex:none}
+.spread{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px;display:flex;flex-direction:column;gap:14px;min-width:0;box-shadow:var(--shadow)}
+.card-h{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.note{font-size:.8rem;color:var(--muted);line-height:1.5}
+.num{font-variant-numeric:tabular-nums}
+
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible,a:focus-visible,summary:focus-visible,[role="button"]:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:12px;padding:12px 18px;font-weight:600;font-size:.98rem;background:var(--accent);color:var(--accent-ink);min-height:48px;text-decoration:none}
+.btn[disabled]{opacity:.4;cursor:not-allowed}
+.btn.ghost{background:var(--surface);color:var(--ink);border:1px solid var(--line)}
+.btn.danger{background:var(--bad);color:#fff}
+.btn.block{width:100%}
+.link{background:none;border:0;padding:4px 0;color:var(--accent);font-weight:500;align-self:flex-start;text-align:left;text-decoration:none}
+.icon-btn{display:inline-flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:7px 14px;font-weight:500;font-size:.86rem}
+.icon-btn svg{width:16px;height:16px}
+
+/* Top */
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:600}
+.brand small{display:block;font-weight:400;font-size:.75rem;color:var(--muted)}
+.mark{width:36px;height:36px;border-radius:10px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-weight:700;font-size:.82rem;flex:none}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:4px;background:var(--sunk);border-radius:12px}
+.tab{border:0;background:transparent;border-radius:9px;padding:9px 6px;font-weight:600;font-size:.9rem;color:var(--muted)}
+.tab.on{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgb(0 0 0 / .08)}
+
+/* Chips, banners */
+.chip{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:999px;font-size:.78rem;font-weight:600;white-space:nowrap}
+.chip.good{background:var(--good-soft);color:var(--good)}
+.chip.warn{background:var(--warn-soft);color:var(--warn)}
+.chip.bad{background:var(--bad-soft);color:var(--bad)}
+.chip.neutral{background:var(--sunk);color:var(--muted)}
+.banner{padding:12px 14px;border-radius:12px;font-size:.9rem;font-weight:500}
+.banner.good{background:var(--good-soft);color:var(--good)} .banner.warn{background:var(--warn-soft);color:var(--warn)} .banner.bad{background:var(--bad-soft);color:var(--bad)}
+.dotc{width:8px;height:8px;border-radius:50%;flex:none;display:inline-block}
+.dotc.good{background:var(--good)} .dotc.warn{background:var(--warn)} .dotc.bad{background:var(--bad)} .dotc.neutral{background:var(--muted)}
+
+/* PIN */
+.dots{display:flex;gap:14px;justify-content:center;padding:6px 0}
+.dots .d{width:16px;height:16px;border-radius:50%;border:2px solid var(--muted)}
+.dots .d.on{background:var(--ink);border-color:var(--ink)}
+.pad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:300px;margin:0 auto;width:100%}
+.pad button{height:58px;border-radius:14px;border:1px solid var(--line);background:var(--surface);font-size:1.35rem;font-weight:500}
+.pad button.fn{font-size:.85rem;background:transparent;border-color:transparent;color:var(--muted)}
+.err{color:var(--bad);font-weight:500;text-align:center;min-height:1.4em;font-size:.9rem}
+
+/* Forms */
+label{display:flex;flex-direction:column;gap:6px;font-weight:500;font-size:.92rem}
+input,textarea,select{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:11px 14px;width:100%;min-height:46px}
+textarea{min-height:110px;resize:vertical}
+
+/* Results list */
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.tile{display:flex;flex-direction:column;gap:2px;text-align:left;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--surface);min-width:0}
+.tile .tl{display:flex;align-items:center;gap:6px;font-size:.74rem;color:var(--muted)}
+.tile b{font-size:1.45rem;font-weight:600;font-variant-numeric:tabular-nums}
+.tile.on{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.controls{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.controls label{color:var(--muted);font-size:.8rem}
+.rlist{display:grid;gap:12px}
+.rc{display:flex;flex-direction:column;gap:14px;padding:16px;border:1px solid var(--line);border-radius:var(--r);background:var(--surface);cursor:pointer;min-width:0;box-shadow:var(--shadow);transition:border-color .12s}
+.rc:hover{border-color:var(--accent)}
+.rc-top{display:flex;gap:12px;align-items:center}
+.rc-top .who{flex:1;min-width:0;display:flex;flex-direction:column}
+.rc-top .who b{font-size:1.05rem;font-weight:600;overflow-wrap:anywhere}
+.rc-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.st{display:flex;flex-direction:column;min-width:0;padding:8px 10px;border-radius:10px;background:var(--sunk)}
+.st b{font-size:1rem;font-weight:600;font-variant-numeric:tabular-nums;display:flex;align-items:center;gap:6px}
+.st span{font-size:.7rem;color:var(--muted);line-height:1.3}
+.rc-foot{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.cmpbtn{border:1px solid var(--line);background:transparent;border-radius:999px;padding:6px 12px;font-size:.8rem;font-weight:500}
+.cmpbtn.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.cmpbar{position:fixed;left:0;right:0;bottom:0;z-index:5;background:var(--surface);border-top:1px solid var(--line);padding-top:12px;padding-bottom:calc(12px + env(safe-area-inset-bottom, 0px));padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px))}
+.cmpbar .inner{max-width:960px;margin:0 auto;display:flex;align-items:center;gap:10px}
+.cmpbar .inner span{flex:1}
+.empty{display:flex;flex-direction:column;gap:12px;align-items:flex-start}
+
+/* Score ring */
+.ring{position:relative;flex:none;display:grid;place-items:center}
+.ring svg{display:block;transform:rotate(-90deg)}
+.ring b{position:absolute;font-weight:700;font-variant-numeric:tabular-nums}
+.ring .track{stroke:var(--sunk)}
+
+/* Result detail */
+.hero{display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:center}
+.hero .v{font-size:1.3rem;font-weight:700}
+.hero .v.good{color:var(--good)} .hero .v.warn{color:var(--warn)} .hero .v.bad{color:var(--bad)}
+.reasons{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px}
+.reasons li{display:flex;gap:10px;align-items:baseline;font-size:.92rem}
+.reasons .dotc{transform:translateY(-1px)}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 13px;font-size:.85rem;font-weight:500}
+.seg button.on{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.meter{display:flex;flex-direction:column;gap:6px}
+.meter .t{height:10px;background:var(--sunk);border-radius:99px;overflow:hidden;position:relative}
+.meter .t span{display:block;height:100%;border-radius:99px}
+.meter .t.marks::before,.meter .t.marks::after{content:"";position:absolute;top:0;bottom:0;width:2px;background:var(--surface);z-index:1}
+.meter .t.marks::before{left:45%} .meter .t.marks::after{left:70%}
+.scale-row{display:flex;flex-direction:column;gap:6px;padding-block:4px}
+.scale-row + .scale-row{border-top:1px solid var(--line);padding-top:12px}
+.dbar{display:grid;grid-template-columns:20px 1fr 36px;gap:10px;align-items:center}
+.dbar .dl{font-weight:700}
+.dbar .dv{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+.track2{position:relative;height:12px;background:var(--sunk);border-radius:99px}
+.track2 .mid{position:absolute;left:50%;top:-3px;bottom:-3px;width:2px;background:var(--line)}
+.track2 .fill{position:absolute;top:0;bottom:0;border-radius:99px}
+.scale-legend{display:grid;grid-template-columns:20px 1fr 36px;gap:10px;font-size:.7rem;color:var(--muted)}
+.scale-legend div{display:flex;justify-content:space-between}
+ul.plain,ol.plain{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:6px}
+.cols{display:grid;grid-template-columns:1fr;gap:14px}
+.ans{border-top:1px solid var(--line);padding-top:12px;display:flex;flex-direction:column;gap:6px}
+.ans:first-child{border-top:0;padding-top:0}
+.ans .q{font-size:.84rem;color:var(--muted)}
+.ans .a{font-weight:500}
+.probe{font-size:.86rem;background:var(--sunk);padding:10px 12px;border-radius:10px}
+.flag{color:var(--bad);font-weight:600;font-size:.86rem}
+details.more summary{cursor:pointer;font-weight:600;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:10px}
+details.more summary::-webkit-details-marker{display:none}
+details.more summary::after{content:"+";font-size:1.3rem;font-weight:400;color:var(--muted)}
+details.more[open] summary::after{content:"−"}
+.kv{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:8px 14px;font-size:.9rem}
+.kv dt{color:var(--muted)} .kv dd{margin:0;font-weight:500}
+.confirm{display:flex;flex-direction:column;gap:10px;padding:14px;border:1px solid var(--bad);border-radius:12px}
+
+/* Compare */
+.ctable{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+.ctable table{border-collapse:collapse;width:100%;min-width:560px}
+.ctable th,.ctable td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top;font-size:.88rem;font-variant-numeric:tabular-nums}
+.ctable tbody th{font-weight:500;color:var(--muted);width:150px;position:sticky;left:0;background:var(--surface);z-index:1}
+.ctable thead th{font-weight:600;font-size:.95rem}
+.ctable tr.sec th{background:var(--sunk);color:var(--ink);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase}
+.ctable td.best{font-weight:700;color:var(--good)}
+.ctable tr:last-child th,.ctable tr:last-child td{border-bottom:0}
+
+/* Method page */
+.method h2{font-size:1.05rem}
+.method p,.method li{font-size:.92rem}
+.wtable{display:grid;grid-template-columns:1fr auto;gap:8px 14px;font-size:.9rem}
+.wtable b{font-variant-numeric:tabular-nums}
+
+@media (min-width:760px){
+  .wide .rlist{grid-template-columns:1fr 1fr}
+  .cols.two{grid-template-columns:1fr 1fr}
+}
+@media (max-width:440px){
+  .tiles{grid-template-columns:1fr 1fr}
+  .rc-stats{grid-template-columns:1fr 1fr}
+  .hero{grid-template-columns:1fr;justify-items:start}
+  .kv{grid-template-columns:1fr}
+  .kv dd{margin-bottom:6px}
+}
+/* Sign-in */
+.otp{font-size:1.6rem;letter-spacing:.5em;text-align:center;font-variant-numeric:tabular-nums;padding-left:.5em}
+.login-actions{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="wrap" id="app">
+  <div class="top"><div class="brand"><span class="mark">TP</span><div>Tes Calon Pengasuh<small>Admin</small></div></div></div>
+  <div class="card"><p class="muted">Memuat…</p></div>
+</div>
+
+<script>
+const BIO = [{"id":"exp","q":"Sudah berapa lama kamu kerja jadi pengasuh anak?","o":["Belum pernah","Kurang dari 1 tahun","1 sampai 3 tahun","Lebih dari 3 tahun"]},{"id":"baby","q":"Pernah mengasuh anak di bawah umur 2 tahun?","o":["Belum pernah","Pernah, sebentar saja","Pernah, lebih dari 6 bulan"]},{"id":"last","q":"Berapa lama kamu kerja di tempat terakhir?","o":["Belum pernah kerja","Kurang dari 6 bulan","6 bulan sampai 1 tahun","Lebih dari 1 tahun"]},{"id":"why","q":"Kenapa kamu berhenti dari tempat kerja terakhir?","o":["Belum pernah kerja","Kontrak atau kerjaan sudah selesai","Ada masalah dengan majikan","Urusan keluarga","Gaji kurang","Alasan lain"]},{"id":"plan","q":"Kalau diterima, kamu mau kerja di sini berapa lama?","o":["Kurang dari 1 tahun","1 sampai 2 tahun","Lebih dari 2 tahun","Belum tahu"]},{"id":"smoke","q":"Apakah kamu merokok?","o":["Tidak","Ya, kadang-kadang","Ya, setiap hari"]}];
+const LIKERT_SCALE = ["Sangat tidak cocok","Tidak cocok","Ragu-ragu","Cocok","Sangat cocok"];
+const DISC = [{"q":"","o":{"D":"Saya suka kerja cepat, supaya cepat selesai.","I":"Saya senang ngobrol dengan orang di rumah.","S":"Saya suka kerjaan yang sama setiap hari.","C":"Saya suka barang ada di tempatnya."}},{"q":"Kalau ada masalah di rumah…","o":{"D":"Saya langsung cari jalan keluar sendiri.","I":"Saya cerita ke orang lain supaya dibantu.","S":"Saya tenang dulu, tidak buru-buru.","C":"Saya pikir dulu baik-baik, baru bertindak."}},{"q":"Teman bilang saya orangnya…","o":{"D":"Berani.","I":"Lucu dan ramai.","S":"Sabar.","C":"Teliti."}},{"q":"Kalau disuruh dengan cara yang menurut saya kurang bagus…","o":{"D":"Saya bilang cara saya lebih cepat.","I":"Saya ajak ngobrol baik-baik.","S":"Saya ikuti saja. Tidak enak kalau membantah.","C":"Saya tanya alasannya, supaya paham."}},{"q":"Waktu kerja, saya paling senang kalau…","o":{"D":"Kerjaan selesai lebih cepat dari waktunya.","I":"Suasana rumah ramai dan ceria.","S":"Semua orang di rumah akur dan tenang.","C":"Semua kerjaan rapi dan tidak ada yang salah."}},{"q":"","o":{"D":"Saya tidak suka menunggu lama.","I":"Saya gampang akrab dengan orang baru.","S":"Saya perlu waktu untuk biasa di tempat baru.","C":"Saya suka ada daftar kerjaan yang jelas."}},{"q":"Kalau saya sedang capek…","o":{"D":"Saya tetap paksa sampai selesai.","I":"Saya cari teman ngobrol supaya semangat lagi.","S":"Saya diam dan tetap kerja pelan-pelan.","C":"Saya atur lagi, mana yang harus duluan."}},{"q":"Saya paling tidak suka kalau…","o":{"D":"Disuruh terus, tidak boleh pakai cara sendiri.","I":"Kerja sendirian, tidak ada teman bicara.","S":"Aturan rumah sering berubah-ubah.","C":"Kerjaan dibuat asal-asalan."}},{"q":"Kalau main dengan anak kecil…","o":{"D":"Saya ajak main yang aktif, seperti kejar-kejaran.","I":"Saya nyanyi dan bikin dia ketawa.","S":"Saya temani dia main apa saja yang dia mau.","C":"Saya ajari dia hal baru, seperti warna atau angka."}},{"q":"Kalau ada aturan baru di rumah…","o":{"D":"Saya coba dulu. Kalau tidak cocok, saya bilang.","I":"Saya tanya-tanya ke orang lain di rumah.","S":"Saya perlu waktu supaya biasa.","C":"Saya catat supaya tidak lupa."}},{"q":"","o":{"D":"Saya suka jadi yang memimpin.","I":"Saya senang dipuji kalau kerja bagus.","S":"Saya senang membantu orang lain.","C":"Saya suka kerja yang hasilnya pasti."}},{"q":"Kalau ada orang marah ke saya…","o":{"D":"Saya jawab dan jelaskan saat itu juga.","I":"Saya coba bikin suasana enak lagi.","S":"Saya diam dan dengarkan.","C":"Saya cek dulu, apa saya memang salah."}},{"q":"Waktu hari libur, saya paling suka…","o":{"D":"Pergi ke tempat baru.","I":"Kumpul dan ngobrol dengan teman.","S":"Istirahat atau kumpul dengan keluarga.","C":"Membereskan barang-barang saya."}},{"q":"","o":{"D":"Saya cepat ambil keputusan.","I":"Saya gampang semangat.","S":"Saya tidak gampang marah.","C":"Saya hati-hati sebelum bicara."}},{"q":"Kalau anak menangis terus…","o":{"D":"Saya gendong dan bawa keluar supaya diam.","I":"Saya ajak ngomong dan bercanda supaya dia lupa.","S":"Saya peluk dan tunggu sampai dia tenang.","C":"Saya pakai cara yang sudah diajarkan Ibu."}},{"q":"Waktu belajar hal baru…","o":{"D":"Saya langsung coba sendiri.","I":"Saya cepat paham kalau diajak ngobrol.","S":"Saya perlu dicontohkan dulu, pelan-pelan.","C":"Saya perlu tahu langkahnya satu per satu."}},{"q":"Orang yang kenal saya kadang bilang…","o":{"D":"Saya keras kepala.","I":"Saya cerewet.","S":"Saya terlalu mengalah.","C":"Saya terlalu banyak tanya."}},{"q":"Kalau kerja bersama orang lain…","o":{"D":"Saya suka yang mengatur pembagian kerja.","I":"Saya yang bikin suasana jadi seru.","S":"Saya bantu di mana saja yang perlu.","C":"Saya pastikan semua dikerjakan dengan benar."}},{"q":"Saya merasa puas kalau…","o":{"D":"Saya berhasil mengerjakan hal yang susah.","I":"Orang di rumah senang dengan saya.","S":"Saya bisa kerja lama di satu tempat.","C":"Hasil kerja saya rapi dan bersih."}},{"q":"","o":{"D":"Saya suka tantangan.","I":"Saya suka suasana ramai.","S":"Saya suka suasana tenang.","C":"Saya suka suasana teratur."}}];
+const SCEN_TXT = [{"t":"Kakak (umur 2,5 tahun) jatuh dari kursi. Kepalanya terbentur. Dia menangis sebentar, lalu main lagi. Ibu sedang di kantor.","o":["Kompres kepalanya. Nanti kalau Ibu tanya, baru cerita.","Langsung telepon atau WA Ibu. Lalu terus awasi Kakak.","Tidak usah bilang. Dia sudah main lagi.","Cerita ke Ibu waktu Ibu pulang."]},{"t":"Kamu sedang masak. Kompor menyala. Adik (umur 1 tahun) menangis di kamar. Kakak main sendiri di ruang tamu.","o":["Selesaikan masak dulu. Sebentar lagi juga selesai.","Suruh Kakak lihat Adik.","Matikan kompor dulu, lalu lihat Adik.","Bawa Adik ke dapur. Gendong sambil masak."]},{"t":"Kakak minta HP untuk nonton. Ibu sudah bilang: tidak boleh HP sebelum makan. Kakak menangis keras sekali.","o":["Kasih HP sebentar supaya diam.","Tetap tidak kasih. Ajak main yang lain.","Kasih HP, tapi jangan bilang Ibu.","Telepon Ibu, tanya boleh atau tidak."]},{"t":"Ada orang datang ke rumah. Dia bilang teman Bapak dan mau mengambil barang. Bapak dan Ibu tidak bilang apa-apa ke kamu.","o":["Persilakan masuk. Kan teman Bapak.","Ambilkan barangnya. Dia tunggu di luar.","Minta dia tunggu di luar. Lalu telepon Bapak atau Ibu.","Suruh dia datang lagi nanti."]},{"t":"Kamu tidak sengaja memecahkan piring kesayangan Ibu. Ibu tidak melihat.","o":["Langsung bilang ke Ibu dan minta maaf.","Buang pecahannya dan diam saja. Mungkin Ibu tidak sadar.","Buang pecahannya. Kalau Ibu tanya, baru bilang.","Bilang Kakak yang memecahkan."]},{"t":"Adik dan Kakak sedang tidur siang.","o":["Main HP sambil tiduran di kamar saya.","Kerjakan pekerjaan rumah. Sering cek anak-anak.","Keluar sebentar beli jajan.","Ikut tidur di dekat anak-anak."]},{"t":"Waktu mencuci baju, kamu menemukan uang Rp100.000 di kantong celana Bapak.","o":["Taruh di meja kamar.","Simpan dulu. Kalau ada yang tanya, baru kasih.","Masukkan lagi ke kantong.","Kasih langsung ke Bapak atau Ibu."]},{"t":"Adik demam. Badannya panas. Ibu belum pulang.","o":["Kasih obat penurun panas yang ada di rumah.","Tunggu Ibu pulang. Nanti Ibu yang urus.","Tanya tetangga harus bagaimana.","Telepon Ibu, lalu kompres Adik."]},{"t":"Kakak memukul Adik sampai Adik menangis.","o":["Pukul tangan Kakak supaya kapok.","Pisahkan mereka. Bilang ke Kakak: tidak boleh memukul. Lalu cek Adik.","Marahi Kakak dengan suara keras.","Biarkan saja. Namanya juga anak kecil."]},{"t":"Kakak tidak mau makan. Sudah 30 menit.","o":["Paksa suapi sampai habis.","Kasih biskuit saja supaya kenyang.","Bilang: nanti dimarahi Ibu, lho.","Biarkan main dulu, coba lagi nanti. Lalu kasih tahu Ibu."]},{"t":"Adik sedang makan, lalu tersedak. Dia batuk-batuk keras.","o":["Kasih minum air yang banyak.","Biarkan dia batuk sambil diawasi. Kalau dia tidak bisa bernapas, tepuk punggungnya dengan kuat.","Ambil makanannya dari mulut pakai jari.","Telepon Ibu dulu, tanya harus bagaimana."]},{"t":"Kakak sedang lucu sekali. Kamu ingin memotretnya.","o":["Foto, lalu pasang di status WA atau media sosial saya.","Foto, lalu kirim ke Ibu saja.","Tidak usah foto. Fokus jaga anak.","Foto, lalu simpan di HP saya sendiri."]}];
+const LIK_TXT = [{"t":"Saya menyelesaikan kerjaan sampai beres."},{"t":"Saya sabar menghadapi anak yang rewel."},{"t":"Saya gampang panik."},{"t":"Saya mengaku kalau saya salah."},{"t":"Saya tidak pernah marah sama sekali, seumur hidup."},{"t":"Saya sering lupa tugas yang sudah disuruh."},{"t":"Saya gampang kesal kalau anak tidak menurut."},{"t":"Saya tetap tenang kalau ada masalah."},{"t":"Kalau tidak ketahuan, mengambil sedikit barang majikan itu tidak apa-apa."},{"t":"Saya menaruh barang kembali di tempatnya."},{"t":"Saya peduli kalau ada orang yang sedih."},{"t":"Saya tidak pernah bohong, satu kali pun."},{"t":"Saya gampang marah."},{"t":"Saya tetap berkata jujur, walaupun bisa kena marah."},{"t":"Saya suka menunda kerjaan."},{"t":"Soal ini untuk cek. Tekan jawaban \"Tidak cocok\"."},{"t":"Saya bicara dengan suara lembut ke anak kecil."},{"t":"Setelah dimarahi, saya cepat semangat lagi."},{"t":"Kadang saya pura-pura sakit supaya bisa libur."},{"t":"Saya suka semua orang yang pernah saya temui."},{"t":"Saya bangun dan datang tepat waktu."},{"t":"Saya membalas kalau ada orang yang kasar ke saya."},{"t":"Saya sering merasa sedih atau cemas."},{"t":"Saya mau bohong sedikit kalau itu menguntungkan saya."},{"t":"Saya kerja asal cepat selesai, tidak rapi."},{"t":"Saya tidak pernah malas, satu hari pun."},{"t":"Saya kurang suka lama-lama bersama anak kecil."},{"t":"Kalau ada kejadian mendadak, saya jadi bingung dan panik."},{"t":"Kerjaan yang saya mulai, pasti saya selesaikan sampai beres."},{"t":"Saya tidak pernah membicarakan orang lain di belakangnya."},{"t":"Kalau anak menangis lama, saya tetap sabar."},{"t":"Kalau saya berbuat salah, saya langsung bilang."},{"t":"Suasana hati saya biasanya baik."},{"t":"Saya tidak mau mengambil barang orang lain, sekecil apa pun."}];
+const DIMS = {"jujur":"Jujur & terbuka","aman":"Keamanan anak","sabar":"Sabar & ikut aturan"};
+const SCALES = {"C":{"name":"Teliti & bertanggung jawab","short":"Teliti","hi":"Rapi dan bisa diandalkan. Menyelesaikan tugas tanpa perlu diingatkan.","mid":"Cukup bisa diandalkan, kadang perlu diingatkan. Checklist harian akan membantu.","lo":"Cenderung lupa, menunda, atau kurang rapi. Butuh checklist dan pengawasan ketat.","ask":"Ceritakan rutinitas harianmu di tempat kerja lama, dari bangun sampai tidur."},"A":{"name":"Sabar & ramah","short":"Sabar","hi":"Hangat dan sabar ke anak, jarang terpancing emosi.","mid":"Umumnya sabar, tapi bisa kesal saat capek atau anak rewel lama.","lo":"Mudah kesal atau kurang menikmati waktu bersama anak. Berisiko untuk balita.","ask":"Apa yang kamu lakukan kalau anak tantrum lebih dari 15 menit dan kamu sudah capek?"},"E":{"name":"Tenang & stabil emosi","short":"Tenang","hi":"Tenang di situasi sulit dan cepat pulih setelah ditegur.","mid":"Kadang cemas atau panik saat ada kejadian mendadak.","lo":"Mudah panik, marah, atau cemas. Perhatikan saat anak sakit atau tantrum.","ask":"Ceritakan kejadian paling menegangkan waktu jaga anak. Apa yang kamu lakukan?"},"H":{"name":"Jujur & tulus","short":"Jujur","hi":"Jujur dan terbuka. Tidak mau mengambil yang bukan haknya.","mid":"Umumnya jujur, tapi ada sikap yang perlu dicek lewat referensi.","lo":"Ada sikap permisif terhadap bohong atau mengambil barang. Cek referensi dengan serius.","ask":"Pernah tidak, majikan lama curiga sama kamu? Ceritakan."}};
+const STYLE = {"D":{"name":"Tegas & cepat","color":"var(--dD)","gist":"Gesit, mandiri, berani ambil keputusan, maunya hasil cepat.","plus":["Sigap kalau ada kejadian darurat, tidak gampang panik","Cekatan mengerjakan banyak hal sekaligus","Cocok dengan anak laki-laki yang aktif dan suka main fisik"],"watch":["Bisa ngeyel dan memakai cara sendiri","Kurang sabar menghadapi anak tantrum","Saat buru-buru bisa kasar: suara keras, menarik tangan anak","Kurang telaten di rutinitas yang berulang"],"lead":["Jelaskan hasil yang diharapkan dan batas yang tidak boleh dilanggar (contoh: tidak boleh membentak atau memukul)","Kasih tanggung jawab yang jelas, biarkan dia mengatur caranya","Tegas sejak hari pertama"],"trial":"Perhatikan nada bicaranya ke anak dan caranya menghadapi anak yang rewel.","ask":["Kalau anak tantrum di tempat umum, apa yang kamu lakukan?","Pernah beda pendapat dengan majikan? Terus bagaimana?"]},"I":{"name":"Ceria & ramah","color":"var(--dI)","gist":"Hangat, ekspresif, gampang akrab, senang suasana ramai.","plus":["Anak cepat lengket","Banyak mengajak ngobrol, bagus untuk perkembangan bicara anak umur 1 sampai 2,5 tahun","Suasana rumah terasa hidup"],"watch":["Gampang terdistraksi: HP, ngobrol dengan tetangga atau ART lain","Kurang konsisten dengan aturan rumah","Bisa lupa detail seperti jam makan atau obat","Suka cerita ke luar soal urusan rumah"],"lead":["Aturan HP yang jelas selama jaga anak","Checklist harian: makan, tidur, popok, mandi","Puji kalau kerjanya bagus, dia termotivasi dari situ"],"trial":"Hitung seberapa sering dia pegang HP dan apakah detail kecil terlewat.","ask":["Sehari biasanya pakai HP berapa lama? Kapan saja?","Kalau tetangga tanya-tanya soal keluarga ini, kamu jawab apa?"]},"S":{"name":"Sabar & tenang","color":"var(--dS)","gist":"Kalem, sabar, suka rutinitas, menghindari konflik. Biasanya betah lama.","plus":["Sabar menghadapi tantrum","Konsisten menjalankan jadwal makan dan tidur","Anak merasa aman dan tenang"],"watch":["Suka memendam masalah: tidak bilang kalau ada yang salah atau kalau tidak betah","Kurang inisiatif","Bisa kewalahan kalau dua anak rewel bersamaan","Lambat merespons kejadian darurat"],"lead":["Kasih jadwal harian yang jelas","Kenalkan perubahan pelan-pelan","Rajin tanya \"ada kesulitan?\" karena dia jarang bilang duluan"],"trial":"Perhatikan apakah dia melapor tanpa ditanya, dan gimana dia kalau dua anak menangis bareng.","ask":["Kalau ada yang bikin kamu tidak nyaman di sini, kamu akan bilang ke siapa?","Ceritakan waktu dua anak menangis bersamaan. Kamu melakukan apa?"]},"C":{"name":"Teliti & taat aturan","color":"var(--dC)","gist":"Rapi, hati-hati, suka instruksi yang jelas, tidak suka salah.","plus":["Disiplin soal kebersihan botol, makanan, dan mainan","Mengikuti aturan rumah (screen time, makanan)","Cermat soal keamanan"],"watch":["Bisa kaku dan kurang mengajak main","Lambat kalau ada kejadian di luar rencana","Gampang stres kalau aturan tidak jelas atau berubah-ubah","Bisa lebih fokus beres-beres daripada menemani anak"],"lead":["Tulis aturan dan jadwal","Jelaskan alasan di balik aturan","Bilang jelas bahwa main dengan anak adalah bagian dari kerja"],"trial":"Perhatikan apakah dia main dan ngobrol dengan anak, atau sibuk beres-beres.","ask":["Kalau aturan dari Ibu dan dari nenek berbeda, kamu ikut yang mana?","Biasanya kamu main apa dengan anak umur 2 tahun?"]}};
+// Filled from the database after sign-in (see hydrate.js).
+let SCEN = SCEN_TXT, LIK = LIK_TXT, BIO_NOTES = {};
+/* The admin page ships question texts only. After sign-in it loads the answer keys
+   (stored in Supabase, readable by admins only) and rebuilds the full content objects
+   in exactly the shape content.js defines, so scoring.js runs unchanged. */
+
+// content.js objects -> secret part stored in tes_pengasuh_config (used by build.js)
+function splitKeys(SCEN_FULL, LIK_FULL, BIO_NOTES_FULL){
+  return {
+    v: 2,
+    scen: SCEN_FULL.map(s => ({dim: s.dim, probe: s.probe, o: s.o.map(o => o.slice(1))})),
+    lik: LIK_FULL.map(l => { const x = {k: l.k}; if(l.r) x.r = l.r; if(l.want != null) x.want = l.want; if(l.pair != null) x.pair = l.pair; return x; }),
+    bioNotes: BIO_NOTES_FULL,
+  };
+}
+
+// public texts + keys -> full objects
+function hydrate(scenTxt, likTxt, cfg){
+  if(!cfg || cfg.v !== 2 || cfg.scen?.length !== scenTxt.length || cfg.lik?.length !== likTxt.length) throw new Error("config mismatch");
+  return {
+    SCEN: scenTxt.map((s, i) => ({dim: cfg.scen[i].dim, t: s.t, o: s.o.map((txt, k) => [txt, ...cfg.scen[i].o[k]]), probe: cfg.scen[i].probe})),
+    LIK: likTxt.map((l, i) => ({t: l.t, ...cfg.lik[i]})),
+    BIO_NOTES: cfg.bioNotes || {},
+  };
+}
+
+
+/* Shared by both pages: helpers, DISC block order and the answer code that travels
+   from the candidate page to the admin dashboard inside a link. */
+
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const LS = {
+  get(k){ try{ return JSON.parse(localStorage.getItem(k)); }catch{ return null; } },
+  set(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch{} },
+  del(k){ try{ localStorage.removeItem(k); }catch{} },
+};
+
+// Fixed per-block shuffle so the same letter is not always in the same spot.
+function order(i){
+  const a = ["D","I","S","C"]; let s = (i+1)*7919;
+  for(let k=3;k>0;k--){ s = (s*9301+49297)%233280; const j = Math.floor(s/233280*(k+1)); [a[k],a[j]]=[a[j],a[k]]; }
+  return a;
+}
+
+// One DISC answer (most, least) = one letter a-l.
+const PAIR = "abcdefghijkl", DL = "DISC";
+function encPair(m, l){ const mi = DL.indexOf(m), li = DL.indexOf(l); return PAIR[mi*3 + (li > mi ? li-1 : li)]; }
+function decPair(ch){
+  const x = PAIR.indexOf(ch); if(x < 0) return null;
+  const mi = Math.floor(x/3), lj = x%3, li = lj >= mi ? lj+1 : lj;
+  return {m:DL[mi], l:DL[li]};
+}
+
+const clean = s => (String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").trim().replace(/\s+/g,"_").replace(/[^A-Za-z0-9_]/g,"").slice(0,30)) || "~";
+const unclean = s => s === "~" ? "" : String(s||"").replace(/_/g," ");
+function checksum(s){ let h=0; for(const ch of s){ h = (h*31 + ch.charCodeAt(0)) >>> 0; } return (h % 1296).toString(36).padStart(2,"0"); }
+const s36 = n => Math.max(0, Math.round(n||0)).toString(36);
+
+// tp2.<id>.<name>.<age>.<origin>.<bio><scen><likert><disc>.<sjt s>.<likert s>.<disc s>.<total s>.<finished s>.<check>
+function buildCode(c){
+  const ans = c.bio.join("") + c.scen.join("") + c.lik.join("") + c.disc.map(a => encPair(a.m, a.l)).join("");
+  const body = ["tp2", c.id, clean(c.name), clean(c.age), clean(c.origin), ans,
+    s36(c.dur.sjt), s36(c.dur.lik), s36(c.dur.disc), s36((c.finishedAt - c.startedAt)/1000), s36(c.finishedAt/1000)].join(".");
+  return body + "." + checksum(body);
+}
+
+// Returns a stored record, or null when the code is damaged. Also reads the first version (tp1).
+function decodeCode(raw){
+  try{
+    const m = String(raw||"").match(/tp[12]\.[A-Za-z0-9._~-]+/); if(!m) return null;
+    const parts = m[0].split(".");
+    const v = parts[0] === "tp2" ? 2 : 1;
+    const n = v === 2 ? 12 : 10;
+    if(parts.length !== n) return null;
+    if(checksum(parts.slice(0, n-1).join(".")) !== parts[n-1]) return null;
+    const [, id, name, age, origin, ans] = parts;
+    const num = i => parseInt(parts[i], 36);
+    const discFrom = str => [...str].map(ch => { const p = decPair(ch); if(!p) throw new Error("bad"); return p; });
+    const base = {id:"w"+id, name:unclean(name), age:unclean(age), origin:unclean(origin), notes:"", status:"Baru", source:"online"};
+
+    if(v === 1){
+      if(ans.length !== DISC.length + 10) return null;
+      const disc = discFrom(ans.slice(0, DISC.length));
+      const scen = [...ans.slice(DISC.length)].map(Number);
+      if(scen.some(x => !(x >= 0 && x <= 3))) return null;
+      const finishedAt = num(8)*1000, startedAt = finishedAt - num(7)*1000, discS = num(6);
+      return {...base, v:1, bio:null, lik:null, disc, scen, startedAt, finishedAt, createdAt:finishedAt,
+        dur:{disc:discS, sjt:Math.max(0, (finishedAt-startedAt)/1000 - discS), lik:0}};
+    }
+
+    const nb = BIO.length, ns = SCEN.length, nl = LIK.length;
+    if(ans.length !== nb + ns + nl + DISC.length) return null;
+    const digits = s => [...s].map(Number);
+    const bio = digits(ans.slice(0, nb));
+    const scen = digits(ans.slice(nb, nb+ns));
+    const lik = digits(ans.slice(nb+ns, nb+ns+nl));
+    const disc = discFrom(ans.slice(nb+ns+nl));
+    if(bio.some((x,i) => !(x >= 0 && x < BIO[i].o.length))) return null;
+    if(scen.some(x => !(x >= 0 && x <= 3))) return null;
+    if(lik.some(x => !(x >= 1 && x <= 5))) return null;
+    const finishedAt = num(10)*1000, startedAt = finishedAt - num(9)*1000;
+    return {...base, v:2, bio, scen, lik, disc, startedAt, finishedAt, createdAt:finishedAt,
+      dur:{sjt:num(6), lik:num(7), disc:num(8)}};
+  }catch{ return null; }
+}
+
+/* Scoring for the admin dashboard only (never shipped to the candidate page).
+
+   Method, in order of how much it counts:
+   1. Situational judgment (SJT): 12 childcare situations, keyed 0-3 by childcare safety
+      guidance. The strongest job-related signal here, so it carries 40% of the overall score.
+   2. Character scales: 4 job-relevant traits x 6 items (3 positive, 3 reverse-keyed) from
+      IPIP / HEXACO-style items. Each scale = mean of 1-5 answers, rescaled to 0-100. 15% each.
+   3. Response quality checks: too-good-to-be-true items, an instructed-response item,
+      4 repeated-meaning pairs, same-answer runs, answer speed and DISC position bias.
+   4. DISC: work style only. Not part of the score; DISC is not validated for selection. */
+
+const BAND = s => s >= 70 ? {k:"hi", t:"Tinggi", cls:"good"} : s >= 45 ? {k:"mid", t:"Sedang", cls:"warn"} : {k:"lo", t:"Rendah", cls:"bad"};
+const WEIGHTS = {sjt:.40, H:.15, C:.15, E:.15, A:.15};
+
+function scoreDisc(disc){
+  const d = {D:0,I:0,S:0,C:0}, pos = [0,0,0,0];
+  (disc||[]).forEach((a, i) => {
+    if(!a || !a.m || !a.l) return;
+    d[a.m]++; d[a.l]--;
+    pos[order(i).indexOf(a.m)]++;
+  });
+  const ranked = Object.entries(d).sort((a,b) => b[1]-a[1]);
+  const primary = ranked[0][0], secondary = ranked[1][1] > 0 ? ranked[1][0] : null;
+  const fitPts = d.S*1 + d.C*0.6 + d.I*0.3 - d.D*0.7;
+  const fit = fitPts >= 6 ? {t:"Cocok", cls:"good"} : fitPts >= 0 ? {t:"Cukup cocok", cls:"warn"} : {t:"Perlu diperhatikan", cls:"bad"};
+  return {d, pos, primary, secondary, fitPts, fit};
+}
+
+function scoreSjt(scen){
+  const dims = {}; Object.keys(DIMS).forEach(k => dims[k] = {got:0, of:0});
+  const flags = [], answers = []; let total = 0, max = 0;
+  SCEN.forEach((sc, i) => {
+    const k = scen?.[i]; if(k == null || !sc.o[k]) return;
+    const [txt, pts, flag, sev] = sc.o[k];
+    total += pts; max += 3; dims[sc.dim].got += pts; dims[sc.dim].of += 3;
+    if(flag) flags.push({t:flag, sev:sev||"sedang", i});
+    answers.push({i, txt, pts, flag, sev});
+  });
+  Object.values(dims).forEach(x => x.pct = x.of ? Math.round(x.got/x.of*100) : null);
+  return {pct: max ? Math.round(total/max*100) : 0, n: answers.length, dims, flags, answers};
+}
+
+function scoreLikert(lik){
+  if(!Array.isArray(lik) || lik.length !== LIK.length) return null;
+  const sums = {}, counts = {};
+  Object.keys(SCALES).forEach(k => { sums[k] = 0; counts[k] = 0; });
+  let lie = 0, attentionOk = true; const pairs = [], strong = [];
+  LIK.forEach((it, i) => {
+    const v = lik[i];
+    if(SCALES[it.k]){
+      const val = it.r ? 6 - v : v;
+      sums[it.k] += val; counts[it.k]++;
+      if(val <= 2) strong.push({i, v, k:it.k});
+    }
+    else if(it.k === "L" && v >= 4) lie++;
+    else if(it.k === "X" && v !== it.want) attentionOk = false;
+    else if(it.k === "P") pairs.push({a:it.pair, b:i, diff:Math.abs(v - lik[it.pair])});
+  });
+  const scales = {};
+  Object.keys(SCALES).forEach(k => { const s = Math.round((sums[k]/counts[k] - 1)/4*100); scales[k] = {score:s, band:BAND(s)}; });
+  const freq = [0,0,0,0,0,0];
+  LIK.forEach((it, i) => { if(it.k !== "X") freq[lik[i]]++; });
+  const sameMax = Math.max(...freq), scored = LIK.filter(it => it.k !== "X").length;
+  return {scales, lie, lieOf:LIK.filter(it => it.k === "L").length, attentionOk,
+    inconsistent: pairs.filter(p => p.diff >= 3), pairs, sameMax, scored, strong};
+}
+
+function checkQuality(c, disc, lk){
+  const issues = []; // {t, level:"major"|"minor"}
+  const dur = c.dur || {disc:((c.part2At||0) - (c.startedAt||0))/1000, sjt:((c.finishedAt||0) - (c.part2At||0))/1000, lik:0};
+  if(lk){
+    if(!lk.attentionOk) issues.push({level:"major", t:"Soal cek (\"Tekan Tidak cocok\") dijawab salah. Kemungkinan tidak membaca soal, atau kurang paham."});
+    if(lk.lie >= 3) issues.push({level:"major", t:`${lk.lie} dari ${lk.lieOf} pernyataan \"terlalu sempurna\" dijawab cocok (contoh: tidak pernah bohong sekali pun). Kemungkinan menjawab supaya terlihat baik, jadi skor karakter bisa lebih tinggi dari aslinya.`});
+    else if(lk.lie === 2) issues.push({level:"minor", t:`2 dari ${lk.lieOf} pernyataan \"terlalu sempurna\" dijawab cocok. Ada kecenderungan ingin terlihat baik.`});
+    if(lk.inconsistent.length >= 2) issues.push({level:"major", t:`${lk.inconsistent.length} dari ${lk.pairs.length} pasang soal yang artinya sama dijawab bertolak belakang. Jawaban tidak konsisten.`});
+    else if(lk.inconsistent.length === 1) issues.push({level:"minor", t:"1 pasang soal yang artinya sama dijawab bertolak belakang."});
+    if(lk.sameMax >= Math.ceil(lk.scored*0.75)) issues.push({level:"major", t:`${lk.sameMax} dari ${lk.scored} soal karakter dijawab dengan pilihan yang sama. Kemungkinan asal pilih.`});
+    if(dur.lik > 0 && dur.lik < LIK.length*2) issues.push({level:"minor", t:`Bagian karakter selesai dalam ${fmtSec(dur.lik)}. Terlalu cepat untuk membaca ${LIK.length} soal.`});
+  }
+  if(dur.sjt > 0 && dur.sjt < SCEN.length*4) issues.push({level:"minor", t:`Bagian cerita selesai dalam ${fmtSec(dur.sjt)}. Terlalu cepat untuk membaca semua cerita.`});
+  if(dur.disc > 0 && dur.disc < (c.v === 2 ? 120 : 180)) issues.push({level:"minor", t:`Bagian gaya kerja selesai dalam ${fmtSec(dur.disc)}. Terlalu cepat untuk membaca 80 kalimat.`});
+  const maxPos = Math.max(...disc.pos);
+  if(maxPos >= 11) issues.push({level:"minor", t:`Jawaban \"paling mirip\" ${maxPos} dari 20 kali ada di urutan yang sama. Kemungkinan asal pilih di bagian gaya kerja.`});
+  const majors = issues.filter(x => x.level === "major").length, minors = issues.length - majors;
+  const level = majors >= 2 ? {t:"Rendah", cls:"bad"} : (majors === 1 || minors >= 2) ? {t:"Perlu dicek", cls:"warn"} : {t:"Baik", cls:"good"};
+  return {issues, level, dur};
+}
+
+function fmtSec(s){ s = Math.round(s||0); if(s < 60) return s + " detik"; const m = Math.round(s/60); return m + " menit"; }
+
+function compute(c){
+  const disc = scoreDisc(c.disc);
+  const sjt = scoreSjt(c.scen);
+  const lk = scoreLikert(c.lik);
+  const quality = checkQuality(c, disc, lk);
+
+  // Overall score: SJT-weighted when character scales exist, SJT only for first-version tests.
+  let overall = sjt.pct;
+  if(lk){
+    overall = sjt.pct*WEIGHTS.sjt + Object.keys(SCALES).reduce((s,k) => s + lk.scales[k].score*WEIGHTS[k], 0);
+  }
+  overall = Math.round(overall);
+
+  const severe = sjt.flags.filter(f => f.sev === "berat");
+  const lowScales = lk ? Object.keys(SCALES).filter(k => lk.scales[k].band.k === "lo") : [];
+  const reasons = [];
+  severe.forEach(f => reasons.push({cls:"bad", t:"Red flag berat: " + f.t}));
+  sjt.flags.filter(f => f.sev !== "berat").forEach(f => reasons.push({cls:"warn", t:"Red flag: " + f.t}));
+  if(sjt.pct < 60) reasons.push({cls:"bad", t:`Skor situasi jaga anak rendah (${sjt.pct}%).`});
+  else if(sjt.pct < 80) reasons.push({cls:"warn", t:`Skor situasi jaga anak cukup (${sjt.pct}%). Beberapa jawaban kurang tepat.`});
+  else reasons.push({cls:"good", t:`Keputusan di situasi jaga anak baik (${sjt.pct}%).`});
+  lowScales.forEach(k => reasons.push({cls:"bad", t:`${SCALES[k].name} rendah (${lk.scales[k].score}).`}));
+  if(lk && !lowScales.length){
+    const mids = Object.keys(SCALES).filter(k => lk.scales[k].band.k === "mid");
+    if(mids.length) reasons.push({cls:"warn", t:`Perlu digali: ${mids.map(k => SCALES[k].name.toLowerCase()).join(", ")}.`});
+    else reasons.push({cls:"good", t:"Semua skala karakter kerja tinggi."});
+  }
+  const inflated = !!(lk && lk.lie >= 3);
+  if(inflated) reasons.push({cls:"warn", t:"Jawaban karakter terlalu sempurna. Skor bisa lebih tinggi dari aslinya, jadi andalkan wawancara dan referensi."});
+  if(quality.level.cls !== "good") reasons.push({cls:quality.level.cls, t:`Keandalan jawaban: ${quality.level.t.toLowerCase()}.`});
+
+  let verdict;
+  if(severe.length || sjt.flags.length >= 2 || overall < 50)
+    verdict = {key:"bad", t:"Hati-hati", cls:"bad", why:"Ada jawaban yang berisiko untuk keamanan anak atau kejujuran."};
+  else if(quality.level.t === "Rendah")
+    verdict = {key:"warn", t:"Ulangi tes", cls:"warn", why:"Jawaban kurang bisa dipercaya. Ulangi tes sambil didampingi, lalu bandingkan."};
+  else if(sjt.flags.length || overall < 70 || quality.level.cls === "warn" || lowScales.length)
+    verdict = {key:"warn", t:"Lanjut dengan catatan", cls:"warn", why:"Bisa lanjut ke wawancara, tapi gali dulu poin-poin di bawah."};
+  else
+    verdict = {key:"good", t:"Lanjut ke trial", cls:"good", why:"Keputusan jaga anak, karakter kerja, dan keandalan jawaban semuanya baik."};
+
+  const bioNotes = [];
+  if(Array.isArray(c.bio)) BIO.forEach((b, i) => { const n = BIO_NOTES[b.id]?.[c.bio[i]]; if(n) bioNotes.push(n); });
+
+  // Interview guide: weakest areas first.
+  const asks = [];
+  severe.concat(sjt.flags.filter(f => f.sev !== "berat")).forEach(f => asks.push(SCEN[f.i].probe));
+  if(lk) Object.keys(SCALES).filter(k => lk.scales[k].band.k !== "hi").sort((a,b) => lk.scales[a].score - lk.scales[b].score).forEach(k => asks.push(SCALES[k].ask));
+  STYLE[disc.primary].ask.forEach(q => asks.push(q));
+  asks.push("Boleh saya telepon majikan terakhir kamu? Siapa namanya dan berapa nomornya?");
+
+  return {disc, sjt, lk, quality, overall, inflated, overallBand:BAND(overall), verdict, reasons, bioNotes, asks:[...new Set(asks)],
+    // flat aliases used by lists and tables
+    primary:disc.primary, secondary:disc.secondary, flags:sjt.flags, scenPct:sjt.pct};
+}
+
+
+const CAND_URL = "https://yoedhistieras.github.io/tes-pengasuh/";
+const SB_URL = "https://qewpwhbhceqrsimntmzc.supabase.co";
+// Public client key. Every table is locked by row-level security: without an admin sign-in it can read nothing.
+const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFld3B3aGJoY2VxcnNpbW50bXpjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA4Mzg3MDIsImV4cCI6MjEwNjQxNDcwMn0.zGMdLcY9lJ5Gu_uLDOi5MBpCFjPLi-jLC-qT4ZPOO7c";
+const TABLE = "tes_pengasuh_hasil";
+const IDLE_MS = 30*60*1000;
+const $app = document.getElementById("app");
+const ICON = {
+  out:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg>',
+};
+const fmtDate = ts => ts ? new Date(ts).toLocaleDateString("id-ID",{day:"numeric",month:"short",year:"numeric"}) : "-";
+const fmtTime = ts => new Date(ts).toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"});
+const STATUSES = ["Baru","Wawancara","Trial","Diterima","Tidak lanjut"];
+const statusOf = c => STATUSES.includes(c.status) ? c.status : "Baru";
+const statusCls = s => s==="Diterima" ? "good" : s==="Tidak lanjut" ? "bad" : s==="Baru" ? "neutral" : "warn";
+const bandColor = cls => `var(--${cls})`;
+
+/* ---------- Sign-in: one-time 6-digit email code (Supabase Auth). Session lives only in this tab. ---------- */
+const Auth = {
+  s:null, refreshing:null,
+  load(){ try{ const v = JSON.parse(sessionStorage.getItem("tp_admin_session")); if(v && v.refresh_token) this.s = v; }catch{} },
+  save(){ try{ this.s ? sessionStorage.setItem("tp_admin_session", JSON.stringify(this.s)) : sessionStorage.removeItem("tp_admin_session"); }catch{} },
+  async call(path, body){
+    const r = await fetch(SB_URL + "/auth/v1/" + path, {method:"POST", headers:{apikey:SB_KEY, "Content-Type":"application/json"}, body:JSON.stringify(body)});
+    let j = null; try{ j = await r.json(); }catch{}
+    if(!r.ok) throw {status:r.status, code:j?.error_code || j?.code || "", msg:j?.msg || j?.error_description || ""};
+    return j;
+  },
+  set(j){ this.s = {access_token:j.access_token, refresh_token:j.refresh_token, expires_at:Date.now() + (j.expires_in || 3600)*1000, email:j.user?.email || this.s?.email || ""}; this.save(); },
+  sendCode(email){ return this.call("otp", {email, create_user:true}); },
+  async verify(email, token){ this.set(await this.call("verify", {type:"email", email, token})); },
+  async token(){
+    if(!this.s) throw {status:401};
+    if(Date.now() > this.s.expires_at - 60000){
+      this.refreshing = this.refreshing || this.call("token?grant_type=refresh_token", {refresh_token:this.s.refresh_token})
+        .then(j => this.set(j)).finally(() => { this.refreshing = null; });
+      await this.refreshing;
+    }
+    return this.s.access_token;
+  },
+  async logout(){
+    const t = this.s?.access_token; this.s = null; this.save();
+    if(t) try{ await fetch(SB_URL + "/auth/v1/logout", {method:"POST", headers:{apikey:SB_KEY, Authorization:"Bearer " + t}}); }catch{}
+  },
+};
+
+async function api(path, opt = {}){
+  let t;
+  try{ t = await Auth.token(); }catch{ return sessionEnded(); }
+  const r = await fetch(SB_URL + "/rest/v1/" + path, {...opt, headers:{apikey:SB_KEY, Authorization:"Bearer " + t, "Content-Type":"application/json", ...(opt.headers || {})}});
+  if(r.status === 401) return sessionEnded();
+  if(!r.ok){ let b = ""; try{ b = await r.text(); }catch{} throw {status:r.status, body:b}; }
+  if(r.status === 204 || r.headers.get("content-length") === "0") return null;
+  const txt = await r.text(); return txt ? JSON.parse(txt) : null;
+}
+function sessionEnded(){
+  Auth.s = null; Auth.save();
+  S.login = {stage:"email", email:LS.get("tp_admin_email") || "", err:"Sesi berakhir. Masuk lagi untuk melanjutkan."};
+  S.list = null; go("login");
+  throw {status:401, ended:true};
+}
+
+/* ---------- Storage: one row per finished test ---------- */
+const Store = {
+  async list(){
+    const rows = await api(`${TABLE}?select=id,code,status,notes,created_at&order=created_at.desc&limit=1000`);
+    return rows.map(row => {
+      const rec = decodeCode(row.code); if(!rec) return null;
+      return {...rec, id:row.id, status:row.status, notes:row.notes, receivedAt:Date.parse(row.created_at)};
+    }).filter(Boolean);
+  },
+  patch(id, p){ return api(`${TABLE}?id=eq.${encodeURIComponent(id)}`, {method:"PATCH", headers:{Prefer:"return=minimal"}, body:JSON.stringify(p)}); },
+  remove(id){ return api(`${TABLE}?id=eq.${encodeURIComponent(id)}`, {method:"DELETE", headers:{Prefer:"return=minimal"}}); },
+  async insert(id, code){
+    try{ await api(TABLE, {method:"POST", headers:{Prefer:"return=minimal"}, body:JSON.stringify({id, code})}); return true; }
+    catch(e){ if(e.status === 409) return false; throw e; }
+  },
+};
+
+/* ---------- State ---------- */
+const S = {
+  view:"loading", after:"home", login:{stage:"email", email:"", err:""}, sending:false, resendAt:0,
+  list:null, selId:null, confirmDel:false, noteMsg:"", flash:null, importErr:"", loadedAt:0,
+  cname:"", invite:"", copyMsg:"", tab:"hasil",
+  filter:"all", fStatus:"all", sort:"skor", cmp:[], cache:new Map(),
+};
+// compute() is pure; cache by record identity so lists stay fast.
+function res(c){ let r = S.cache.get(c); if(!r){ r = compute(c); S.cache.set(c, r); } return r; }
+
+/* ---------- Pieces ---------- */
+function ring(score, cls, size = 76){
+  const r = size/2 - 6, C = 2*Math.PI*r, off = C*(1 - Math.max(0, Math.min(100, score))/100);
+  return `<span class="ring" style="width:${size}px;height:${size}px" role="img" aria-label="Skor ${score} dari 100">
+    <svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}"><circle class="track" cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke-width="7"/>
+    <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${bandColor(cls)}" stroke-width="7" stroke-linecap="round" stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${off.toFixed(1)}"/></svg>
+    <b style="font-size:${size > 60 ? 1.35 : .92}rem">${score}</b></span>`;
+}
+const meter = (pct, cls, marks) => `<div class="t ${marks ? "marks" : ""}"><span style="width:${Math.max(2, pct)}%;background:${bandColor(cls)}"></span></div>`;
+const pctCls = p => p >= 80 ? "good" : p >= 60 ? "warn" : "bad";
+
+function header(){
+  return `<div class="top">
+    <div class="brand"><span class="mark">TP</span><div>Tes Calon Pengasuh<small>Admin</small></div></div>
+    <button class="icon-btn" data-act="logout">${ICON.out}Keluar</button>
+  </div>
+  <nav class="tabs" aria-label="Halaman admin">
+    ${[["hasil","Hasil tes"],["kirim","Kirim tes"],["metode","Metode"]].map(([k,t]) => `<button class="tab ${S.tab===k?"on":""}" data-act="tab" data-t="${k}" ${S.tab===k?'aria-current="page"':""}>${t}</button>`).join("")}
+  </nav>
+  ${S.flash ? `<div class="banner ${S.flash.cls}" role="status">${esc(S.flash.t)}</div>` : ""}`;
+}
+const plainTop = () => `<div class="top"><div class="brand"><span class="mark">TP</span><div>Tes Calon Pengasuh<small>Admin</small></div></div></div>`;
+
+/* ---------- Views ---------- */
+function loginView(){
+  const L = S.login, wait = Math.max(0, Math.ceil((S.resendAt - Date.now())/1000));
+  const body = L.stage === "email" ? `
+    <form id="f-login" class="stack" novalidate>
+      <label>Email admin<input id="l-email" type="email" inputmode="email" autocomplete="email" maxlength="120" value="${esc(L.email)}" placeholder="nama@email.com" required></label>
+      <button class="btn" type="submit" ${S.sending ? "disabled" : ""}>${S.sending ? "Mengirim kode…" : "Kirim kode"}</button>
+    </form>` : `
+    <p class="small">Kode 6 digit sudah dikirim ke <b>${esc(L.email)}</b>. Cek inbox atau folder spam.</p>
+    <form id="f-code" class="stack" novalidate>
+      <label>Kode 6 digit<input id="l-code" class="otp" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]*" maxlength="6" placeholder="••••••" required></label>
+      <button class="btn" type="submit" ${S.sending ? "disabled" : ""}>${S.sending ? "Memeriksa…" : "Masuk"}</button>
+    </form>
+    <div class="login-actions">
+      <button class="link" data-act="resend" ${wait ? "disabled" : ""}>${wait ? `Kirim ulang (${wait} dtk)` : "Kirim ulang kode"}</button>
+      <button class="link" data-act="changeemail">Ganti email</button>
+    </div>`;
+  return plainTop() + `
+  <div class="card" style="gap:16px;padding-block:24px">
+    <div class="stack" style="gap:6px"><h2>Masuk admin</h2><p class="muted small">Tanpa password. Kode sekali pakai dikirim ke email admin setiap kali masuk.</p></div>
+    ${body}
+    ${L.err ? `<p class="err" style="text-align:left" role="alert">${esc(L.err)}</p>` : ""}
+  </div>
+  <p class="note">Demi keamanan, kamu otomatis keluar setelah 30 menit tidak aktif atau saat tab ditutup.</p>`;
+}
+const refreshLine = () => `<div class="row small muted" role="status"><span>${S.loadedAt ? "Diperbarui " + fmtTime(S.loadedAt) + "." : ""}</span><button class="link" data-act="refresh">Perbarui</button></div>`;
+
+function homeView(){
+  if(S.list === null) return header() + `<div class="card"><p class="muted">Memuat hasil…</p></div>`;
+  if(!S.list.length) return header() + `
+  <div class="card empty">
+    <h2>Belum ada hasil tes</h2>
+    <p class="muted">Begitu calon menyelesaikan tes, hasilnya otomatis muncul di sini lengkap dengan skor, red flag, dan panduan wawancara.</p>
+    ${refreshLine()}
+    <button class="btn" data-act="tab" data-t="kirim">Kirim tes ke calon</button>
+  </div>`;
+
+  const all = S.list.map(c => ({c, r:res(c), st:statusOf(c)}));
+  const n = k => all.filter(x => x.r.verdict.key === k).length;
+  const rows = all.filter(x => (S.filter === "all" || x.r.verdict.key === S.filter) && (S.fStatus === "all" || x.st === S.fStatus));
+  const by = {
+    skor:(a,b) => b.r.overall - a.r.overall,
+    baru:(a,b) => (b.c.finishedAt||b.c.createdAt||0) - (a.c.finishedAt||a.c.createdAt||0),
+    situasi:(a,b) => b.r.sjt.pct - a.r.sjt.pct || a.r.flags.length - b.r.flags.length,
+    flag:(a,b) => a.r.flags.length - b.r.flags.length || b.r.overall - a.r.overall,
+  };
+  rows.sort(by[S.sort] || by.skor);
+  const tile = (f, label, count, cls) => `<button class="tile ${S.filter===f?"on":""}" data-act="filt" data-f="${f}" aria-pressed="${S.filter===f}">
+    <span class="tl">${cls ? `<i class="dotc ${cls}"></i>` : ""}${label}</span><b>${count}</b></button>`;
+  const opt = (v, t, cur) => `<option value="${v}" ${cur===v?"selected":""}>${t}</option>`;
+
+  const cards = rows.map(({c, r, st}) => {
+    const on = S.cmp.includes(c.id), P = STYLE[r.primary];
+    const meta = [fmtDate(c.finishedAt||c.createdAt), c.age ? esc(c.age)+" th" : "", c.origin ? esc(c.origin) : ""].filter(Boolean).join(" · ");
+    return `<div class="rc" role="button" tabindex="0" data-act="open" data-id="${esc(c.id)}" aria-label="Buka hasil ${esc(c.name)}">
+      <div class="rc-top">
+        ${ring(r.overall, r.overallBand.cls, 54)}
+        <div class="who"><b>${esc(c.name)}</b><span class="muted small">${meta}</span>
+          <span class="row" style="gap:6px;margin-top:6px"><span class="chip ${r.verdict.cls}">${r.verdict.t}</span>${r.inflated ? `<span class="chip warn">Skor bisa terlalu tinggi</span>` : ""}</span></div>
+      </div>
+      <div class="rc-stats">
+        <div class="st"><b>${r.sjt.pct}%</b><span>Situasi anak</span></div>
+        <div class="st"><b style="color:${r.flags.length ? "var(--bad)" : "inherit"}">${r.flags.length}</b><span>Red flag</span></div>
+        <div class="st"><b><i class="dotc ${r.quality.level.cls}"></i>${r.quality.level.t}</b><span>Keandalan</span></div>
+        <div class="st"><b style="color:${P.color}">${r.primary}${r.secondary||""}</b><span>${P.name}</span></div>
+      </div>
+      <div class="rc-foot">
+        <span class="chip ${statusCls(st)}">${st}</span>
+        <button class="cmpbtn ${on?"on":""}" data-act="cmp" data-id="${esc(c.id)}" aria-pressed="${on}">${on ? "Dipilih" : "+ Bandingkan"}</button>
+      </div>
+    </div>`;
+  }).join("");
+
+  return header() + `
+  <div class="spread"><h1>Hasil tes</h1><span class="muted small num">${all.length} calon</span></div>
+  ${refreshLine()}
+  <div class="tiles">
+    ${tile("all","Semua calon",all.length,"")}
+    ${tile("good","Lanjut ke trial",n("good"),"good")}
+    ${tile("warn","Perlu dicek",n("warn"),"warn")}
+    ${tile("bad","Hati-hati",n("bad"),"bad")}
+  </div>
+  <div class="controls">
+    <label>Urutkan<select id="f-sort">${opt("skor","Skor tertinggi",S.sort)}${opt("baru","Terbaru",S.sort)}${opt("situasi","Skor situasi",S.sort)}${opt("flag","Red flag sedikit",S.sort)}</select></label>
+    <label>Status<select id="f-status">${opt("all","Semua status",S.fStatus)}${STATUSES.map(s => opt(s,s,S.fStatus)).join("")}</select></label>
+  </div>
+  ${rows.length ? `<div class="rlist">${cards}</div>` : `<div class="card empty"><p class="muted">Tidak ada calon yang cocok dengan filter ini.</p><button class="link" data-act="filtreset">Tampilkan semua</button></div>`}
+  ${S.cmp.length ? `<div style="height:84px"></div>
+  <div class="cmpbar"><div class="inner">
+    <span class="small"><b>${S.cmp.length}</b> dipilih${S.cmp.length < 2 ? ", pilih 1 lagi" : ""}</span>
+    <button class="btn ghost" data-act="cmpclear">Batal</button>
+    <button class="btn" data-act="compare" ${S.cmp.length < 2 ? "disabled" : ""}>Bandingkan</button>
+  </div></div>` : ""}
+  <p class="note">Skor membantu menyaring, bukan memutuskan. Keputusan terbaik tetap dari wawancara, cek referensi, dan masa percobaan. Lihat tab Metode.</p>`;
+}
+
+function resultView(){
+  if(S.list === null) return header() + `<div class="card"><p class="muted">Memuat hasil…</p></div>`;
+  const c = S.list.find(x => x.id === S.selId);
+  if(!c) return header() + `<button class="link" data-act="tab" data-t="hasil">← Hasil tes</button><div class="card"><p class="muted">Data calon tidak ditemukan.</p></div>`;
+  const r = res(c), st = statusOf(c), P = STYLE[r.primary], Sec = r.secondary ? STYLE[r.secondary] : null;
+  const meta = [c.age ? esc(c.age)+" tahun" : "", c.origin ? esc(c.origin) : "", "Tes " + fmtDate(c.finishedAt),
+    c.finishedAt && c.startedAt ? fmtSec((c.finishedAt - c.startedAt)/1000) : ""].filter(Boolean).join(" · ");
+
+  // DISC bars
+  const max = Math.max(8, ...Object.values(r.disc.d).map(Math.abs));
+  const discBars = ["D","I","S","C"].map(k => {
+    const v = r.disc.d[k], w = Math.abs(v)/max*50, left = v >= 0 ? 50 : 50 - w;
+    return `<div class="dbar"><span class="dl" style="color:var(--d${k})">${k}</span>
+      <div class="track2"><div class="mid"></div><div class="fill" style="left:${left}%;width:${w}%;background:var(--d${k})"></div></div>
+      <span class="dv">${v > 0 ? "+" : ""}${v}</span></div>`;
+  }).join("");
+
+  const scalesHtml = r.lk ? Object.keys(SCALES).map(k => {
+    const s = r.lk.scales[k], info = SCALES[k];
+    return `<div class="scale-row">
+      <div class="spread"><b style="min-width:0">${info.name}</b><span class="row nowrap" style="gap:8px"><span class="num"><b>${s.score}</b></span><span class="chip ${s.band.cls}">${s.band.t}</span></span></div>
+      <div class="meter">${meter(s.score, s.band.cls, true)}</div>
+      <p class="small muted">${info[s.band.k]}</p>
+    </div>`;
+  }).join("") : `<p class="muted small">Bagian ini belum ada di versi tes yang dikerjakan calon ini. Kirim ulang link tes terbaru kalau ingin melihat karakter kerjanya.</p>`;
+
+  const dimsHtml = Object.entries(r.sjt.dims).filter(([,x]) => x.pct != null).map(([k, x]) =>
+    `<div class="meter"><div class="spread small"><span>${DIMS[k]}</span><b class="num">${x.pct}%</b></div>${meter(x.pct, pctCls(x.pct))}</div>`).join("");
+
+  const ansList = r.sjt.answers.map(a => {
+    const sc = SCEN[a.i];
+    const chip = a.pts === 3 ? `<span class="chip good">Tepat</span>` : a.pts === 2 ? `<span class="chip neutral">Cukup</span>` : `<span class="chip ${a.pts === 0 ? "bad" : "warn"}">${a.pts === 0 ? "Berisiko" : "Kurang tepat"}</span>`;
+    return `<div class="ans">
+      <span class="q">${a.i+1}. ${esc(sc.t)}</span>
+      <div class="spread" style="align-items:flex-start"><span class="a">${esc(a.txt)}</span>${chip}</div>
+      ${a.flag ? `<span class="flag">Red flag${a.sev === "berat" ? " berat" : ""}: ${esc(a.flag)}</span>` : ""}
+      ${a.pts <= 1 ? `<p class="probe"><b>Tanya:</b> "Kenapa pilih itu?" ${esc(sc.probe)}</p>` : ""}
+    </div>`;
+  }).join("");
+
+  const strongList = r.lk && r.lk.strong.length ? r.lk.strong.map(s => `<li><span class="muted">${esc(SCALES[s.k].short)}:</span> "${esc(LIK[s.i].t)}" → <b>${LIKERT_SCALE[s.v-1]}</b></li>`).join("") : "";
+  const bioHtml = Array.isArray(c.bio) ? `<dl class="kv">${BIO.map((b, i) => `<dt>${esc(b.q)}</dt><dd>${esc(b.o[c.bio[i]] ?? "-")}</dd>`).join("")}</dl>` : `<p class="muted small">Tidak ada di versi tes ini.</p>`;
+
+  return header() + `
+  <button class="link" data-act="tab" data-t="hasil">← Hasil tes</button>
+  <div class="stack" style="gap:4px"><h1>${esc(c.name)}</h1><p class="muted small">${meta}</p></div>
+  <div class="stack" style="gap:6px">
+    <span class="eyebrow">Status rekrutmen</span>
+    <div class="seg" role="group" aria-label="Status rekrutmen">${STATUSES.map(s => `<button class="${s===st?"on":""}" data-act="setstatus" data-s="${s}" aria-pressed="${s===st}">${s}</button>`).join("")}</div>
+  </div>
+
+  <section class="card">
+    <div class="hero">
+      ${ring(r.overall, r.overallBand.cls, 92)}
+      <div class="stack" style="gap:4px">
+        <span class="eyebrow">Kesimpulan awal · skor ${r.overall}/100</span>
+        <span class="v ${r.verdict.cls}">${r.verdict.t}</span>
+        <p class="small muted">${r.verdict.why}</p>
+      </div>
+    </div>
+    <ul class="reasons">${r.reasons.map(x => `<li><i class="dotc ${x.cls}"></i><span>${esc(x.t)}</span></li>`).join("")}</ul>
+  </section>
+
+  <section class="card">
+    <div class="card-h"><h2>Keandalan jawaban</h2><span class="chip ${r.quality.level.cls}">${r.quality.level.t}</span></div>
+    ${r.quality.issues.length ? `<ul class="plain small">${r.quality.issues.map(x => `<li>${esc(x.t)}</li>`).join("")}</ul>
+      ${r.quality.level.t !== "Baik" ? `<p class="note">Kalau keandalan rendah, ulangi tes sambil didampingi dan bacakan soalnya.</p>` : ""}`
+      : `<p class="small muted">Tidak ada tanda asal pilih atau jawaban yang dibuat-buat. Jawaban konsisten.</p>`}
+  </section>
+
+  <div class="cols two">
+    <section class="card">
+      <div class="card-h"><h2>Situasi jaga anak</h2><span class="num"><b>${r.sjt.pct}%</b> <span class="muted small">bobot 40%</span></span></div>
+      ${dimsHtml}
+      ${r.flags.length ? `<div class="stack" style="gap:4px">${r.flags.map(f => `<span class="flag">Red flag${f.sev === "berat" ? " berat" : ""}: ${esc(f.t)}</span>`).join("")}</div>` : `<p class="small muted">Tidak ada red flag.</p>`}
+    </section>
+    <section class="card">
+      <div class="card-h"><h2>Karakter kerja</h2>${r.lk ? `<span class="muted small">bobot 15% per skala</span>` : ""}</div>
+      ${scalesHtml}
+    </section>
+  </div>
+
+  <section class="card">
+    <div class="card-h"><h2>Gaya kerja (DISC)</h2><span class="chip ${r.disc.fit.cls}">${r.disc.fit.t} untuk balita</span></div>
+    <p class="note">Menggambarkan cara kerja dan cara mengarahkan. Tidak dipakai untuk skor lolos.</p>
+    ${discBars}
+    <div class="scale-legend"><span></span><div><span>rendah</span><span>tinggi</span></div><span></span></div>
+    <div class="stack" style="gap:4px">
+      <h3 style="color:${P.color}">${r.primary} · ${P.name}</h3>
+      <p>${P.gist}</p>
+      ${Sec ? `<p class="small muted">Gaya kedua: <b style="color:${Sec.color}">${r.secondary} · ${Sec.name}</b>. ${Sec.gist}</p>` : ""}
+    </div>
+    <div class="cols two">
+      <div class="stack" style="gap:6px"><h3>Kelebihan</h3><ul class="plain small">${P.plus.map(x => `<li>${x}</li>`).join("")}</ul></div>
+      <div class="stack" style="gap:6px"><h3>Yang perlu diawasi</h3><ul class="plain small">${P.watch.map(x => `<li>${x}</li>`).join("")}</ul></div>
+    </div>
+    <div class="stack" style="gap:6px"><h3>Cara mengarahkan</h3><ul class="plain small">${P.lead.map(x => `<li>${x}</li>`).join("")}</ul></div>
+    <p class="probe"><b>Saat trial:</b> ${P.trial}</p>
+  </section>
+
+  <div class="cols two">
+    <section class="card">
+      <h2>Latar belakang</h2>
+      ${bioHtml}
+      ${r.bioNotes.length ? `<ul class="plain small">${r.bioNotes.map(x => `<li>${esc(x)}</li>`).join("")}</ul>` : ""}
+    </section>
+    <section class="card">
+      <h2>Panduan wawancara</h2>
+      <ol class="plain small">${r.asks.map(q => `<li>${esc(q)}</li>`).join("")}</ol>
+    </section>
+  </div>
+
+  <details class="card more">
+    <summary>Jawaban per cerita (${r.sjt.answers.length})</summary>
+    ${ansList}
+  </details>
+  ${strongList ? `<details class="card more">
+    <summary>Jawaban karakter yang menonjol (${r.lk.strong.length})</summary>
+    <p class="note">Kalimat yang dijawab ke arah kurang baik. Bagus untuk ditanyakan saat wawancara.</p>
+    <ul class="plain small">${strongList}</ul>
+  </details>` : ""}
+
+  <section class="card">
+    <h2>Catatan admin</h2>
+    <textarea id="notes" placeholder="Kesan wawancara, hasil trial, hasil telepon ke majikan lama…">${esc(c.notes||"")}</textarea>
+    <div class="row"><button class="btn ghost" data-act="savenote">Simpan catatan</button><span class="small muted" role="status">${esc(S.noteMsg)}</span></div>
+  </section>
+
+  ${S.confirmDel
+    ? `<div class="confirm"><b>Hapus semua data ${esc(c.name)}?</b><p class="small muted">Tidak bisa dibatalkan.</p><div class="row"><button class="btn danger" data-act="delyes">Ya, hapus</button><button class="btn ghost" data-act="delno">Batal</button></div></div>`
+    : `<button class="link" style="color:var(--bad)" data-act="del">Hapus data calon ini</button>`}`;
+}
+
+function compareView(){
+  const items = S.cmp.map(id => (S.list||[]).find(c => c.id === id)).filter(Boolean).map(c => ({c, r:res(c)}));
+  if(items.length < 2) return header() + `<button class="link" data-act="tab" data-t="hasil">← Hasil tes</button><div class="card"><p class="muted">Pilih minimal 2 calon untuk dibandingkan.</p></div>`;
+  const best = (vals, high = true) => { const ok = vals.filter(v => v != null); if(!ok.length) return vals.map(() => false); const m = high ? Math.max(...ok) : Math.min(...ok); return vals.map(v => v === m && ok.filter(x => x === m).length < ok.length); };
+  const row = (label, cells, marks) => `<tr><th scope="row">${label}</th>${cells.map((x, i) => `<td class="${marks?.[i] ? "best" : ""}">${x}</td>`).join("")}</tr>`;
+  const sec = t => `<tr class="sec"><th colspan="${items.length+1}">${t}</th></tr>`;
+  const ov = items.map(x => x.r.overall), sj = items.map(x => x.r.sjt.pct), fl = items.map(x => x.r.flags.length);
+  const sc = k => items.map(x => x.r.lk ? x.r.lk.scales[k].score : null);
+  return header() + `
+  <button class="link" data-act="tab" data-t="hasil">← Hasil tes</button>
+  <div class="stack" style="gap:4px"><h1>Bandingkan calon</h1><p class="muted small">Hijau tebal = terbaik di antara yang dibandingkan. Geser tabel ke samping di HP.</p></div>
+  <div class="ctable"><table>
+    <thead><tr><th></th>${items.map(({c}) => `<th scope="col"><button class="link" data-act="open" data-id="${esc(c.id)}">${esc(c.name)}</button></th>`).join("")}</tr></thead>
+    <tbody>
+      ${row("Skor keseluruhan", ov.map(String), best(ov))}
+      ${row("Kesimpulan", items.map(({r}) => `<span class="chip ${r.verdict.cls}">${r.verdict.t}</span>`))}
+      ${row("Keandalan", items.map(({r}) => `<span class="chip ${r.quality.level.cls}">${r.quality.level.t}</span>`))}
+      ${row("Status", items.map(({c}) => `<span class="chip ${statusCls(statusOf(c))}">${statusOf(c)}</span>`))}
+      ${sec("Situasi jaga anak")}
+      ${row("Total", sj.map(v => v + "%"), best(sj))}
+      ${Object.keys(DIMS).map(k => { const v = items.map(({r}) => r.sjt.dims[k].pct); return row(DIMS[k], v.map(x => x == null ? "-" : x + "%"), best(v)); }).join("")}
+      ${row("Red flag", items.map(({r}) => r.flags.length ? `<b style="color:var(--bad)">${r.flags.length}</b><ul class="plain small">${r.flags.map(f => `<li>${esc(f.t)}</li>`).join("")}</ul>` : "0"), best(fl, false))}
+      ${sec("Karakter kerja")}
+      ${Object.keys(SCALES).map(k => { const v = sc(k); return row(SCALES[k].name, v.map(x => x == null ? "-" : x), best(v)); }).join("")}
+      ${sec("Gaya kerja")}
+      ${row("Gaya utama", items.map(({r}) => `<b style="color:${STYLE[r.primary].color}">${r.primary}${r.secondary||""}</b> ${STYLE[r.primary].name}`))}
+      ${row("Kecocokan gaya", items.map(({r}) => `<span class="chip ${r.disc.fit.cls}">${r.disc.fit.t}</span>`))}
+      ${sec("Lainnya")}
+      ${row("Pengalaman", items.map(({c}) => Array.isArray(c.bio) ? esc(BIO[0].o[c.bio[0]]) : "-"))}
+      ${row("Umur · asal", items.map(({c}) => [c.age ? esc(c.age) + " th" : "-", c.origin ? esc(c.origin) : ""].filter(Boolean).join(" · ")))}
+      ${row("Catatan", items.map(({c}) => c.notes ? `<span class="small">${esc(c.notes)}</span>` : `<span class="muted">-</span>`))}
+    </tbody>
+  </table></div>`;
+}
+
+function kirimView(){
+  const waHref = S.invite ? "https://wa.me/?text=" + encodeURIComponent(S.invite) : "";
+  const selfLink = CAND_URL + (S.cname ? "?n=" + encodeURIComponent(S.cname) : "");
+  return header() + `
+  <div class="stack" style="gap:4px"><h1>Kirim tes</h1><p class="muted">Calon mengerjakan tes di HP-nya sendiri, tanpa login. Begitu selesai, jawabannya otomatis tersimpan dan muncul di tab Hasil tes.</p></div>
+  <section class="card">
+    <h2>Buat pesan untuk calon</h2>
+    <label>Nama calon<input id="f-cname" maxlength="40" value="${esc(S.cname)}" placeholder="contoh: Sari"></label>
+    <button class="btn" data-act="makelink">Buat pesan</button>
+    ${S.invite ? `
+      <textarea id="invite" readonly aria-label="Pesan untuk calon">${esc(S.invite)}</textarea>
+      <div class="row">
+        <button class="btn ghost" data-act="copyinvite">Salin pesan</button>
+        <a class="btn ghost" href="${esc(waHref)}" target="_blank" rel="noopener">Kirim lewat WhatsApp</a>
+      </div>
+      <p class="small muted" role="status">${esc(S.copyMsg || "Satu link untuk satu calon. Nama calon ikut di link supaya terisi otomatis.")}</p>` : ""}
+  </section>
+  <section class="card">
+    <h2>Calon datang ke rumah?</h2>
+    <p class="muted small">Buka tes di HP ini dan serahkan ke calon. Hasilnya tetap masuk otomatis ke tab Hasil tes.</p>
+    <a class="btn ghost" href="${esc(selfLink)}" target="_blank" rel="noopener">Buka tes di HP ini${S.cname ? " untuk " + esc(S.cname) : ""}</a>
+  </section>
+  <details class="card more">
+    <summary>Punya link jawaban lama dari WhatsApp?</summary>
+    <p class="muted small">Versi tes sebelumnya mengirim jawaban lewat WhatsApp. Tempel pesannya di sini.</p>
+    <textarea id="f-code" placeholder="Tempel pesan dari calon"></textarea>
+    <button class="btn ghost" data-act="paste">Masukkan jawaban</button>
+    ${S.importErr ? `<p class="err" style="text-align:left" role="alert">${esc(S.importErr)}</p>` : ""}
+  </details>
+  <p class="note">Link tes untuk calon: ${esc(CAND_URL)}</p>`;
+}
+
+function metodeView(){
+  return header() + `
+  <div class="stack method">
+    <h1>Metode penilaian</h1>
+    <p class="muted">Tes ini mengikuti cara seleksi kerja yang paling banyak didukung penelitian: menilai keputusan di situasi kerja nyata, sifat kerja yang terbukti berhubungan dengan kinerja, dan mengecek apakah jawabannya bisa dipercaya.</p>
+  </div>
+  <section class="card method">
+    <h2>Apa yang diukur</h2>
+    <div class="stack" style="gap:10px">
+      <div><b>1. Situasi jaga anak (12 cerita)</b><p class="muted">Tes penilaian situasi. Setiap jawaban dinilai 0 sampai 3 berdasarkan panduan keselamatan anak: lapor benturan kepala, tidak meninggalkan balita tanpa pengawas, tidak memakai hukuman fisik, tidak memberi obat tanpa izin, menangani tersedak dengan benar. Jawaban berbahaya ditandai red flag.</p></div>
+      <div><b>2. Karakter kerja (24 kalimat)</b><p class="muted">Empat sifat yang paling berpengaruh untuk pekerjaan pengasuh: teliti, sabar, stabil emosi, dan jujur. Kalimatnya diadaptasi dari bank soal kepribadian publik IPIP (Big Five) dan konsep Honesty-Humility dari HEXACO. Setiap sifat diukur dengan 6 kalimat, 3 di antaranya dibalik supaya calon tidak bisa asal setuju.</p></div>
+      <div><b>3. Pengecekan keandalan (10 kalimat + waktu)</b><p class="muted">5 pernyataan "terlalu sempurna" untuk mendeteksi jawaban yang dibuat-buat, 1 soal perintah ("tekan Tidak cocok") untuk mengecek apakah calon membaca, 4 pasang kalimat dengan arti sama untuk mengecek konsistensi, pola jawaban yang sama terus, dan kecepatan menjawab.</p></div>
+      <div><b>4. Gaya kerja DISC (20 soal)</b><p class="muted">Pilihan paksa paling mirip dan paling tidak mirip. Dipakai untuk memahami cara kerja dan cara mengarahkan. DISC tidak dipakai untuk skor lolos karena tidak terbukti memprediksi kinerja.</p></div>
+    </div>
+  </section>
+  <section class="card method">
+    <h2>Cara menghitung skor (0 sampai 100)</h2>
+    <div class="wtable">
+      <span>Situasi jaga anak</span><b>40%</b>
+      <span>Jujur &amp; tulus</span><b>15%</b>
+      <span>Teliti &amp; bertanggung jawab</span><b>15%</b>
+      <span>Tenang &amp; stabil emosi</span><b>15%</b>
+      <span>Sabar &amp; ramah</span><b>15%</b>
+    </div>
+    <p class="muted">Skor tiap sifat: 70 ke atas tinggi, 45 sampai 69 sedang, di bawah 45 rendah. Batas ini berdasarkan isi jawaban, bukan perbandingan dengan populasi, jadi paling berguna untuk membandingkan calon satu sama lain.</p>
+  </section>
+  <section class="card method">
+    <h2>Cara menentukan kesimpulan</h2>
+    <ul class="plain">
+      <li><span class="chip bad">Hati-hati</span> ada red flag berat, atau 2 red flag atau lebih, atau skor di bawah 50.</li>
+      <li><span class="chip warn">Ulangi tes</span> keandalan jawaban rendah. Ulangi tes sambil didampingi.</li>
+      <li><span class="chip warn">Lanjut dengan catatan</span> ada 1 red flag ringan, skor 50 sampai 69, ada sifat yang rendah, atau keandalan perlu dicek.</li>
+      <li><span class="chip good">Lanjut ke trial</span> skor 70 ke atas, tanpa red flag, semua sifat sedang atau tinggi, keandalan baik.</li>
+    </ul>
+  </section>
+  <section class="card method">
+    <h2>Batasan dan langkah selanjutnya</h2>
+    <ul class="plain">
+      <li>Ini alat bantu penyaringan, bukan tes psikologi resmi, dan belum punya norma populasi Indonesia.</li>
+      <li>Calon bisa saja menjawab supaya terlihat baik. Pengecekan keandalan membantu, tapi tidak menangkap semuanya.</li>
+      <li>Urutan terbaik: tes ini, lalu wawancara memakai panduan wawancara di halaman hasil, lalu telepon majikan lama, lalu trial berbayar 1 sampai 3 hari, lalu masa percobaan 1 sampai 3 bulan.</li>
+      <li>Saat trial, perhatikan langsung: nada bicara ke anak, penggunaan HP, kebersihan, dan apakah dia melapor tanpa ditanya.</li>
+    </ul>
+  </section>`;
+}
+
+/* ---------- Render ---------- */
+function render(){
+  const V = {loading:() => plainTop() + `<div class="card"><p class="muted">Memuat…</p></div>`,
+    login:loginView, home:homeView, result:resultView, compare:compareView, kirim:kirimView, metode:metodeView};
+  $app.className = "wrap" + (["home","compare","result"].includes(S.view) ? " wide" : "");
+  $app.innerHTML = (V[S.view] || V.loading)();
+}
+function go(view){
+  S.tab = view === "kirim" ? "kirim" : view === "metode" ? "metode" : "hasil";
+  S.view = view; render(); window.scrollTo(0, 0);
+}
+async function loadList(){
+  try{ S.list = await Store.list(); S.loadedAt = Date.now(); }
+  catch(e){ if(e?.ended) return; S.list = S.list || []; S.flash = {cls:"bad", t:"Gagal memuat data. Cek koneksi lalu tekan Perbarui."}; }
+  S.cache = new Map();
+  S.cmp = S.cmp.filter(id => S.list.some(c => c.id === id));
+  if(["home","result","compare"].includes(S.view)) render();
+}
+
+// After sign-in (or a restored tab session): check admin access, load the answer keys, open the dashboard.
+async function enter(){
+  const me = await api("tes_pengasuh_admins?select=email");
+  if(!me || !me.length){ await Auth.logout(); throw {code:"not_admin"}; }
+  const cfg = await api("tes_pengasuh_config?id=eq.scoring&select=data");
+  if(!cfg || !cfg.length) throw {code:"no_config"};
+  ({SCEN, LIK, BIO_NOTES} = hydrate(SCEN_TXT, LIK_TXT, cfg[0].data));
+  S.cache = new Map(); S.list = null;
+  go(S.after || "home"); await loadList();
+}
+
+async function importCode(text){
+  const m = String(text || "").match(/tp[12]\.[A-Za-z0-9._~-]+/);
+  const rec = m && decodeCode(m[0]);
+  if(!rec){ S.importErr = "Kode jawaban tidak dikenali. Pastikan seluruh pesan dari calon ikut ditempel dan tidak diubah."; render(); return; }
+  const id = rec.id.slice(1);
+  try{
+    const added = await Store.insert(id, m[0]);
+    S.flash = {cls:"good", t: added ? `Jawaban ${rec.name} sudah masuk.` : `Jawaban ${rec.name} sudah pernah dimasukkan.`};
+  }catch(e){ if(e?.ended) return; S.importErr = "Gagal menyimpan. Cek koneksi lalu coba lagi."; render(); return; }
+  S.importErr = ""; S.selId = id; S.list = null; go("result"); await loadList();
+}
+
+/* ---------- Actions ---------- */
+const act = {
+  async resend(){
+    if(S.sending || Date.now() < S.resendAt) return;
+    await sendCode(S.login.email);
+  },
+  changeemail(){ S.login = {stage:"email", email:S.login.email, err:""}; render(); },
+  async logout(){ await Auth.logout(); S.list = null; S.selId = null; S.invite = ""; S.flash = null; S.cmp = []; S.login = {stage:"email", email:LS.get("tp_admin_email") || "", err:""}; go("login"); },
+  tab(ds){
+    S.flash = null; S.confirmDel = false; S.noteMsg = "";
+    go(ds.t === "kirim" ? "kirim" : ds.t === "metode" ? "metode" : "home");
+    if(S.list === null || (ds.t === "hasil" && Date.now() - S.loadedAt > 60000)) loadList();
+  },
+  open(ds){ S.selId = ds.id; S.confirmDel = false; S.noteMsg = ""; S.flash = null; go("result"); },
+  filt(ds){ S.filter = (S.filter === ds.f && ds.f !== "all") ? "all" : ds.f; render(); },
+  filtreset(){ S.filter = "all"; S.fStatus = "all"; render(); },
+  cmp(ds){
+    const i = S.cmp.indexOf(ds.id);
+    if(i >= 0) S.cmp.splice(i, 1);
+    else if(S.cmp.length < 3) S.cmp.push(ds.id);
+    else S.flash = {cls:"warn", t:"Maksimal 3 calon untuk dibandingkan."};
+    render();
+  },
+  cmpclear(){ S.cmp = []; S.flash = null; render(); },
+  compare(){ S.flash = null; go("compare"); },
+  async setstatus(ds){
+    const c = S.list?.find(x => x.id === S.selId); if(!c || statusOf(c) === ds.s) return;
+    const prev = c.status; c.status = ds.s; render();
+    try{ await Store.patch(c.id, {status:ds.s}); }
+    catch(e){ if(e?.ended) return; c.status = prev; S.flash = {cls:"bad", t:"Status gagal disimpan. Cek koneksi lalu coba lagi."}; render(); }
+  },
+  async savenote(){
+    const v = document.getElementById("notes").value;
+    try{ await Store.patch(S.selId, {notes:v}); const c = S.list.find(x => x.id === S.selId); if(c) c.notes = v; S.noteMsg = "Tersimpan."; }
+    catch{ S.noteMsg = "Gagal menyimpan. Coba lagi."; }
+    render();
+  },
+  del(){ S.confirmDel = true; render(); },
+  delno(){ S.confirmDel = false; render(); },
+  async delyes(){
+    try{
+      await Store.remove(S.selId);
+      S.list = S.list.filter(x => x.id !== S.selId); S.cmp = S.cmp.filter(x => x !== S.selId);
+      S.selId = null; S.confirmDel = false; S.flash = {cls:"good", t:"Data calon sudah dihapus."}; go("home");
+    }catch(e){ if(e?.ended) return; S.confirmDel = false; S.flash = {cls:"bad", t:"Gagal menghapus. Coba lagi."}; render(); }
+  },
+  makelink(){
+    S.cname = document.getElementById("f-cname").value.trim();
+    const url = CAND_URL + (S.cname ? "?n=" + encodeURIComponent(S.cname) : "");
+    S.invite = `Halo${S.cname ? " " + S.cname : ""}, ini tes untuk lowongan pengasuh anak.\n\nKerjakan di HP kamu sendiri, di tempat yang tenang. Waktunya sekitar 30 menit. Kalau terputus, buka lagi link-nya, jawaban tetap tersimpan.\n\nSetelah soal terakhir, jawaban kamu otomatis terkirim.\n\n${url}`;
+    S.copyMsg = ""; S.flash = null; render();
+  },
+  refresh(){ S.flash = null; loadList(); },
+  copyinvite(){
+    const ta = document.getElementById("invite");
+    try{
+      navigator.clipboard.writeText(ta.value).then(
+        () => { S.copyMsg = "Pesan sudah disalin. Tempel di chat calon."; render(); },
+        () => { ta.select(); S.copyMsg = "Teks sudah dipilih. Salin manual dari menu HP."; document.querySelector('[role="status"]').textContent = S.copyMsg; });
+    }catch{ ta.select(); }
+  },
+  paste(){ importCode(document.getElementById("f-code").value); },
+};
+
+$app.addEventListener("click", e => {
+  const b = e.target.closest("[data-act]"); if(!b || b.disabled) return;
+  if(b.tagName === "A") return;
+  act[b.dataset.act]?.(b.dataset, b);
+});
+$app.addEventListener("change", e => {
+  if(e.target.id === "f-sort"){ S.sort = e.target.value; render(); }
+  if(e.target.id === "f-status"){ S.fStatus = e.target.value; render(); }
+});
+$app.addEventListener("keydown", e => {
+  if((e.key === "Enter" || e.key === " ") && e.target.matches('[role="button"][data-act]')){ e.preventDefault(); e.target.click(); }
+});
+$app.addEventListener("submit", e => {
+  e.preventDefault();
+  if(e.target.id === "f-login"){
+    const email = document.getElementById("l-email").value.trim().toLowerCase();
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ S.login.err = "Tulis email yang benar."; S.login.email = email; render(); return; }
+    sendCode(email);
+  }
+  if(e.target.id === "f-code"){
+    const code = document.getElementById("l-code").value.replace(/\D/g, "");
+    if(code.length !== 6){ S.login.err = "Kode harus 6 angka."; render(); return; }
+    verifyCode(code);
+  }
+});
+$app.addEventListener("input", e => {
+  if(e.target.id === "l-code"){ e.target.value = e.target.value.replace(/\D/g, "").slice(0, 6); if(e.target.value.length === 6 && !S.sending) verifyCode(e.target.value); }
+});
+
+async function sendCode(email){
+  S.sending = true; S.login = {stage:S.login.stage, email, err:""}; render();
+  try{
+    await Auth.sendCode(email);
+    LS.set("tp_admin_email", email);
+    S.login = {stage:"code", email, err:""}; S.resendAt = Date.now() + 60000;
+  }catch(e){
+    S.login.err = e.status === 429 ? "Terlalu sering meminta kode. Tunggu sebentar lalu coba lagi."
+      : e.status === 422 || e.status === 403 ? "Email ini tidak bisa dipakai untuk masuk."
+      : "Gagal mengirim kode. Cek koneksi lalu coba lagi.";
+  }
+  S.sending = false; render();
+  if(S.login.stage === "code") document.getElementById("l-code")?.focus();
+}
+async function verifyCode(code){
+  S.sending = true; S.login.err = ""; render();
+  try{
+    await Auth.verify(S.login.email, code);
+    S.sending = false; lastActive = Date.now();
+    await enter();
+    return;
+  }catch(e){
+    if(e?.code === "not_admin") S.login = {stage:"email", email:S.login.email, err:"Email ini tidak punya akses admin."};
+    else if(e?.code === "no_config") S.login.err = "Data penilaian belum siap. Hubungi pembuat dashboard.";
+    else if(e?.status === 429) S.login.err = "Terlalu banyak percobaan. Tunggu sebentar lalu coba lagi.";
+    else if(e?.status && e.status < 500) S.login.err = "Kode salah atau sudah kedaluwarsa. Coba lagi atau minta kode baru.";
+    else S.login.err = "Gagal masuk. Cek koneksi lalu coba lagi.";
+  }
+  S.sending = false; if(S.view === "login") render(); else go("login");
+}
+
+// Sign out after 30 minutes without activity.
+let lastActive = Date.now();
+["click","keydown","touchstart","scroll"].forEach(ev => window.addEventListener(ev, () => { lastActive = Date.now(); }, {passive:true}));
+setInterval(() => {
+  if(S.view === "login" && S.login.stage === "code" && S.resendAt > Date.now() - 2000) render();
+  if(Auth.s && Date.now() - lastActive > IDLE_MS){
+    Auth.logout(); S.list = null; S.cmp = [];
+    S.login = {stage:"email", email:LS.get("tp_admin_email") || "", err:"Kamu keluar otomatis karena tidak aktif 30 menit."};
+    go("login");
+  }
+}, 1000);
+document.addEventListener("visibilitychange", () => {
+  if(document.visibilityState === "visible" && Auth.s && S.view === "home" && Date.now() - S.loadedAt > 60000) loadList();
+});
+
+/* ---------- Boot ---------- */
+(async function boot(){
+  const h = (location.hash || "").slice(1);
+  S.after = h === "kirim" ? "kirim" : h === "metode" ? "metode" : "home";
+  Auth.load(); render();
+  if(Auth.s){ try{ await enter(); return; }catch(e){ if(e?.ended) return; await Auth.logout(); } }
+  S.login = {stage:"email", email:LS.get("tp_admin_email") || "", err:""};
+  go("login");
+})();
+</script>
+
+</body>
+</html>
