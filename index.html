@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Tes Calon Pengasuh</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&display=swap">
+<style>
+/* Candidate side only: questions, no scoring. Answer keys live in the owner's dashboard. */
+:root{
+  --bg:#F2F6F4; --surface:#FFFFFF; --sunk:#E6EEEB; --ink:#16302B; --muted:#566C67; --line:#D2DEDA;
+  --accent:#15705D; --accent-ink:#FFFFFF; --accent-soft:#D7EDE7;
+  --most:#1E8A4B; --most-soft:#DCF2E4; --least:#C03A29; --least-soft:#F8E0DB;
+  --wa:#1FA855;
+  --font:'Lexend', ui-rounded, 'Segoe UI', system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#0E1916; --surface:#15221E; --sunk:#1C2B27; --ink:#E3EEEA; --muted:#98AEA9; --line:#2A3B36;
+  --accent:#4DC1A5; --accent-ink:#06201A; --accent-soft:#163A31;
+  --most:#4CC27F; --most-soft:#163724; --least:#F07A6A; --least-soft:#3D1E19; --wa:#2BC066; color-scheme:dark}}
+*{box-sizing:border-box}
+html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:17px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.wrap{max-width:560px;margin:0 auto;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:24px 48px;display:flex;flex-direction:column;gap:18px}
+p{margin:0}
+[hidden]{display:none!important}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,textarea:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:600}
+.brand-mark{width:34px;height:34px;border-radius:10px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-weight:700;font-size:.85rem}
+.eyebrow{font-size:.78rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.muted{color:var(--muted)}
+.small{font-size:.88rem}
+.spread{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;border:0;border-radius:12px;padding:14px 18px;font-weight:600;font-size:1.05rem;background:var(--accent);color:var(--accent-ink);min-height:56px;width:100%;text-decoration:none}
+.btn[disabled]{opacity:.4;cursor:not-allowed}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line);width:auto}
+.btn.wa{background:var(--wa);color:#fff;font-size:1.15rem;min-height:64px}
+.btn svg{width:24px;height:24px}
+.icon-btn{display:inline-flex;align-items:center;gap:8px;background:var(--sunk);border:0;border-radius:999px;padding:8px 14px;font-weight:500;font-size:.9rem;flex:none}
+.icon-btn svg{width:18px;height:18px}
+.big{font-size:1.8rem;font-weight:600;line-height:1.25}
+.howto{display:flex;flex-direction:column;gap:12px;font-size:1.15rem}
+.howto ol{margin:0;padding-left:1.4em;display:flex;flex-direction:column;gap:10px}
+.swatch{display:inline-block;padding:1px 8px;border-radius:6px;font-weight:700;color:#fff}
+.swatch.m{background:var(--most)} .swatch.l{background:var(--least)}
+label{display:flex;flex-direction:column;gap:6px;font-weight:500;font-size:1.1rem}
+input,textarea{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;width:100%}
+textarea{min-height:120px;font-size:.85rem}
+.progress{height:8px;border-radius:99px;background:var(--sunk);overflow:hidden}
+.progress span{display:block;height:100%;background:var(--accent);border-radius:99px;transition:width .25s}
+.qtext{font-size:1.35rem;font-weight:500;line-height:1.4}
+.step{padding:12px 14px;border-radius:12px;font-weight:600;font-size:1.05rem}
+.step.m{background:var(--most-soft);color:var(--most)}
+.step.l{background:var(--least-soft);color:var(--least)}
+.step.ok{background:var(--accent-soft);color:var(--accent)}
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{display:flex;align-items:center;gap:14px;text-align:left;width:100%;padding:16px;border-radius:14px;border:2px solid var(--line);background:var(--surface);font-size:1.15rem;line-height:1.4;min-height:64px}
+.opt .txt{flex:1;min-width:0}
+.opt .tag{flex:none;font-size:.75rem;font-weight:700;padding:4px 8px;border-radius:8px}
+.opt.m{border-color:var(--most);background:var(--most-soft)} .opt.m .tag{background:var(--most);color:#fff}
+.opt.l{border-color:var(--least);background:var(--least-soft)} .opt.l .tag{background:var(--least);color:#fff}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt .letter{flex:none;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-weight:600;background:var(--sunk)}
+.opt.sel .letter{background:var(--accent);color:var(--accent-ink)}
+.story{font-size:1.2rem;line-height:1.55;background:var(--sunk);padding:16px;border-radius:14px}
+.nav{display:grid;grid-template-columns:auto 1fr;gap:10px}
+.nav .btn{width:auto}
+.done-mark{width:72px;height:72px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;margin:0 auto}
+.done-mark svg{width:38px;height:38px}
+.center{text-align:center}
+.err{color:var(--least);font-weight:500}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"><div class="brand"><span class="brand-mark">TP</span>Tes Calon Pengasuh</div><p class="muted">Memuat…</p></div>
+
+<script>
+// Keep DISC/SCEN text and order in sync with the owner dashboard: answers are sent as positions.
+const DASHBOARD = "https://claude.ai/artifact/NQPgGTmu5d9p953pj9iBqh";
+
+const DISC = [
+  {q:"", o:{D:"Saya suka kerja cepat, supaya cepat selesai.", I:"Saya senang ngobrol dengan orang di rumah.", S:"Saya suka kerjaan yang sama setiap hari.", C:"Saya suka barang ada di tempatnya."}},
+  {q:"Kalau ada masalah di rumah…", o:{D:"Saya langsung cari jalan keluar sendiri.", I:"Saya cerita ke orang lain supaya dibantu.", S:"Saya tenang dulu, tidak buru-buru.", C:"Saya pikir dulu baik-baik, baru bertindak."}},
+  {q:"Teman bilang saya orangnya…", o:{D:"Berani.", I:"Lucu dan ramai.", S:"Sabar.", C:"Teliti."}},
+  {q:"Kalau disuruh dengan cara yang menurut saya kurang bagus…", o:{D:"Saya bilang cara saya lebih cepat.", I:"Saya ajak ngobrol baik-baik.", S:"Saya ikuti saja. Tidak enak kalau membantah.", C:"Saya tanya alasannya, supaya paham."}},
+  {q:"Waktu kerja, saya paling senang kalau…", o:{D:"Kerjaan selesai lebih cepat dari waktunya.", I:"Suasana rumah ramai dan ceria.", S:"Semua orang di rumah akur dan tenang.", C:"Semua kerjaan rapi dan tidak ada yang salah."}},
+  {q:"", o:{D:"Saya tidak suka menunggu lama.", I:"Saya gampang akrab dengan orang baru.", S:"Saya perlu waktu untuk biasa di tempat baru.", C:"Saya suka ada daftar kerjaan yang jelas."}},
+  {q:"Kalau saya sedang capek…", o:{D:"Saya tetap paksa sampai selesai.", I:"Saya cari teman ngobrol supaya semangat lagi.", S:"Saya diam dan tetap kerja pelan-pelan.", C:"Saya atur lagi, mana yang harus duluan."}},
+  {q:"Saya paling tidak suka kalau…", o:{D:"Disuruh terus, tidak boleh pakai cara sendiri.", I:"Kerja sendirian, tidak ada teman bicara.", S:"Aturan rumah sering berubah-ubah.", C:"Kerjaan dibuat asal-asalan."}},
+  {q:"Kalau main dengan anak kecil…", o:{D:"Saya ajak main yang aktif, seperti kejar-kejaran.", I:"Saya nyanyi dan bikin dia ketawa.", S:"Saya temani dia main apa saja yang dia mau.", C:"Saya ajari dia hal baru, seperti warna atau angka."}},
+  {q:"Kalau ada aturan baru di rumah…", o:{D:"Saya coba dulu. Kalau tidak cocok, saya bilang.", I:"Saya tanya-tanya ke orang lain di rumah.", S:"Saya perlu waktu supaya biasa.", C:"Saya catat supaya tidak lupa."}},
+  {q:"", o:{D:"Saya suka jadi yang memimpin.", I:"Saya senang dipuji kalau kerja bagus.", S:"Saya senang membantu orang lain.", C:"Saya suka kerja yang hasilnya pasti."}},
+  {q:"Kalau ada orang marah ke saya…", o:{D:"Saya jawab dan jelaskan saat itu juga.", I:"Saya coba bikin suasana enak lagi.", S:"Saya diam dan dengarkan.", C:"Saya cek dulu, apa saya memang salah."}},
+  {q:"Waktu hari libur, saya paling suka…", o:{D:"Pergi ke tempat baru.", I:"Kumpul dan ngobrol dengan teman.", S:"Istirahat atau kumpul dengan keluarga.", C:"Membereskan barang-barang saya."}},
+  {q:"", o:{D:"Saya cepat ambil keputusan.", I:"Saya gampang semangat.", S:"Saya tidak gampang marah.", C:"Saya hati-hati sebelum bicara."}},
+  {q:"Kalau anak menangis terus…", o:{D:"Saya gendong dan bawa keluar supaya diam.", I:"Saya ajak ngomong dan bercanda supaya dia lupa.", S:"Saya peluk dan tunggu sampai dia tenang.", C:"Saya pakai cara yang sudah diajarkan Ibu."}},
+  {q:"Waktu belajar hal baru…", o:{D:"Saya langsung coba sendiri.", I:"Saya cepat paham kalau diajak ngobrol.", S:"Saya perlu dicontohkan dulu, pelan-pelan.", C:"Saya perlu tahu langkahnya satu per satu."}},
+  {q:"Orang yang kenal saya kadang bilang…", o:{D:"Saya keras kepala.", I:"Saya cerewet.", S:"Saya terlalu mengalah.", C:"Saya terlalu banyak tanya."}},
+  {q:"Kalau kerja bersama orang lain…", o:{D:"Saya suka yang mengatur pembagian kerja.", I:"Saya yang bikin suasana jadi seru.", S:"Saya bantu di mana saja yang perlu.", C:"Saya pastikan semua dikerjakan dengan benar."}},
+  {q:"Saya merasa puas kalau…", o:{D:"Saya berhasil mengerjakan hal yang susah.", I:"Orang di rumah senang dengan saya.", S:"Saya bisa kerja lama di satu tempat.", C:"Hasil kerja saya rapi dan bersih."}},
+  {q:"", o:{D:"Saya suka tantangan.", I:"Saya suka suasana ramai.", S:"Saya suka suasana tenang.", C:"Saya suka suasana teratur."}},
+];
+
+const SCEN = [
+  {t:"Kakak (umur 2,5 tahun) jatuh dari kursi. Kepalanya terbentur. Dia menangis sebentar, lalu main lagi. Ibu sedang di kantor.",
+   o:["Kompres kepalanya. Nanti kalau Ibu tanya, baru cerita.","Langsung telepon atau WA Ibu. Lalu terus awasi Kakak.","Tidak usah bilang. Dia sudah main lagi.","Cerita ke Ibu waktu Ibu pulang."]},
+  {t:"Kamu sedang masak. Kompor menyala. Adik (umur 1 tahun) menangis di kamar. Kakak main sendiri di ruang tamu.",
+   o:["Selesaikan masak dulu. Sebentar lagi juga selesai.","Suruh Kakak lihat Adik.","Matikan kompor dulu, lalu lihat Adik.","Bawa Adik ke dapur. Gendong sambil masak."]},
+  {t:"Kakak minta HP untuk nonton. Ibu sudah bilang: tidak boleh HP sebelum makan. Kakak menangis keras sekali.",
+   o:["Kasih HP sebentar supaya diam.","Tetap tidak kasih. Ajak main yang lain.","Kasih HP, tapi jangan bilang Ibu.","Telepon Ibu, tanya boleh atau tidak."]},
+  {t:"Ada orang datang ke rumah. Dia bilang teman Bapak dan mau mengambil barang. Bapak dan Ibu tidak bilang apa-apa ke kamu.",
+   o:["Persilakan masuk. Kan teman Bapak.","Ambilkan barangnya. Dia tunggu di luar.","Minta dia tunggu di luar. Lalu telepon Bapak atau Ibu.","Suruh dia datang lagi nanti."]},
+  {t:"Kamu tidak sengaja memecahkan piring kesayangan Ibu. Ibu tidak melihat.",
+   o:["Langsung bilang ke Ibu dan minta maaf.","Buang pecahannya dan diam saja. Mungkin Ibu tidak sadar.","Buang pecahannya. Kalau Ibu tanya, baru bilang.","Bilang Kakak yang memecahkan."]},
+  {t:"Adik dan Kakak sedang tidur siang.",
+   o:["Main HP sambil tiduran di kamar saya.","Kerjakan pekerjaan rumah. Sering cek anak-anak.","Keluar sebentar beli jajan.","Ikut tidur di dekat anak-anak."]},
+  {t:"Waktu mencuci baju, kamu menemukan uang Rp100.000 di kantong celana Bapak.",
+   o:["Taruh di meja kamar.","Simpan dulu. Kalau ada yang tanya, baru kasih.","Masukkan lagi ke kantong.","Kasih langsung ke Bapak atau Ibu."]},
+  {t:"Adik demam. Badannya panas. Ibu belum pulang.",
+   o:["Kasih obat penurun panas yang ada di rumah.","Tunggu Ibu pulang. Nanti Ibu yang urus.","Tanya tetangga harus bagaimana.","Telepon Ibu, lalu kompres Adik."]},
+  {t:"Kakak memukul Adik sampai Adik menangis.",
+   o:["Pukul tangan Kakak supaya kapok.","Pisahkan mereka. Bilang ke Kakak: tidak boleh memukul. Lalu cek Adik.","Marahi Kakak dengan suara keras.","Biarkan saja. Namanya juga anak kecil."]},
+  {t:"Kakak tidak mau makan. Sudah 30 menit.",
+   o:["Paksa suapi sampai habis.","Kasih biskuit saja supaya kenyang.","Bilang: nanti dimarahi Ibu, lho.","Biarkan main dulu, coba lagi nanti. Lalu kasih tahu Ibu."]},
+];
+
+/* ---------- Helpers ---------- */
+const $app = document.getElementById("app");
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const LS = {
+  get(k){ try{ return JSON.parse(localStorage.getItem(k)); }catch{ return null; } },
+  set(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch{} },
+  del(k){ try{ localStorage.removeItem(k); }catch{} },
+};
+function order(i){
+  const a = ["D","I","S","C"]; let s = (i+1)*7919;
+  for(let k=3;k>0;k--){ s = (s*9301+49297)%233280; const j = Math.floor(s/233280*(k+1)); [a[k],a[j]]=[a[j],a[k]]; }
+  return a;
+}
+const ICON = {
+  speak:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>',
+  check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 10 17 19 7"/></svg>',
+  wa:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2c-1.6 0-3.1-.4-4.4-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.4.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.8 2.3 1 2.5c.1.2 1.6 2.5 4 3.5 1.5.6 2 .7 2.8.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.1-1.2l-.4-.2z"/></svg>',
+};
+
+// Answers travel as a short code inside a link to the owner's dashboard.
+const PAIR = "abcdefghijkl";
+function encPair(m,l){ const L="DISC", mi=L.indexOf(m), li=L.indexOf(l); return PAIR[mi*3 + (li>mi ? li-1 : li)]; }
+const clean = s => (String(s||"").normalize("NFD").replace(/[̀-ͯ]/g,"").trim().replace(/\s+/g,"_").replace(/[^A-Za-z0-9_]/g,"").slice(0,30)) || "~";
+function checksum(s){ let h=0; for(const ch of s){ h = (h*31 + ch.charCodeAt(0)) >>> 0; } return (h % 1296).toString(36).padStart(2,"0"); }
+function buildCode(c){
+  const disc = c.disc.map(a => encPair(a.m, a.l)).join("");
+  const scen = c.scen.join("");
+  const p1 = Math.round((c.part2At - c.startedAt)/1000), tot = Math.round((c.finishedAt - c.startedAt)/1000);
+  const body = ["tp1", c.id, clean(c.name), clean(c.age), clean(c.origin), disc+scen, p1.toString(36), tot.toString(36), Math.floor(c.finishedAt/1000).toString(36)].join(".");
+  return body + "." + checksum(body);
+}
+
+const canSpeak = (() => { try{ return "speechSynthesis" in window; }catch{ return false; } })();
+function speak(text){
+  try{
+    const s = window.speechSynthesis; s.cancel();
+    const u = new SpeechSynthesisUtterance(text); u.lang = "id-ID"; u.rate = 0.9;
+    const v = s.getVoices().find(v => /^id/i.test(v.lang)); if(v) u.voice = v;
+    s.speak(u);
+  }catch{}
+}
+const speakBtn = text => canSpeak ? `<button class="icon-btn" data-act="speak" data-text="${esc(text)}">${ICON.speak}Dengarkan</button>` : "";
+
+/* ---------- State ---------- */
+const params = new URLSearchParams(location.search);
+const WA = (params.get("wa")||"").replace(/\D/g,"");
+const HINT = (params.get("n")||"").slice(0,40);
+const KEY = "tp_kandidat";
+let C = LS.get(KEY);
+if(!C || !Array.isArray(C.disc) || C.disc.length !== DISC.length){
+  C = {id: Math.random().toString(36).slice(2,8), name:HINT, age:"", origin:"", startedAt:null, part2At:null, finishedAt:null,
+       disc:Array(DISC.length).fill(null), scen:Array(SCEN.length).fill(null), i:0, stage:"start"};
+}
+const save = () => LS.set(KEY, C);
+
+/* ---------- Views ---------- */
+const brand = `<div class="brand"><span class="brand-mark">TP</span>Tes Calon Pengasuh</div>`;
+
+function startView(){
+  return brand + `
+  <p class="big">Selamat datang!</p>
+  <p class="howto">Tes ini untuk lowongan <b>pengasuh anak</b>. Waktunya sekitar 20 menit. Kerjakan sendiri, di tempat yang tenang.</p>
+  <form id="startForm" class="howto" autocomplete="off">
+    <label>Siapa nama kamu?<input id="f-name" required maxlength="40" value="${esc(C.name)}" placeholder="contoh: Sari"></label>
+    <label>Umur berapa?<input id="f-age" inputmode="numeric" maxlength="3" value="${esc(C.age)}" placeholder="contoh: 28"></label>
+    <label>Asal dari mana?<input id="f-origin" maxlength="40" value="${esc(C.origin)}" placeholder="contoh: Klaten"></label>
+    <button class="btn" type="submit">Lanjut</button>
+  </form>`;
+}
+
+function introView(){
+  const say = `Halo, ${C.name}. Ini bukan ujian sekolah. Kami cuma ingin kenal kamu. Ada dua bagian. Bagian satu: dua puluh soal tentang diri kamu. Tidak ada jawaban benar atau salah. Bagian dua: sepuluh cerita tentang menjaga anak. Pilih yang biasa kamu lakukan. Jawab dengan jujur. Tidak usah buru-buru. Setelah selesai, kirim jawaban lewat WhatsApp.`;
+  return brand + `
+  <p class="big">Halo, ${esc(C.name)}!</p>
+  <div class="howto">
+    <p>Ini bukan ujian sekolah. Kami cuma ingin kenal kamu.</p>
+    <p>Ada <b>2 bagian</b>:</p>
+    <ol>
+      <li><b>Bagian 1:</b> 20 soal tentang diri kamu. Tidak ada jawaban benar atau salah.</li>
+      <li><b>Bagian 2:</b> 10 cerita tentang menjaga anak. Pilih yang biasa kamu lakukan.</li>
+    </ol>
+    <p>Jawab dengan jujur. Tidak usah buru-buru.</p>
+    <p>Setelah selesai, kirim jawaban lewat <b>WhatsApp</b>.</p>
+  </div>
+  <div class="row">${speakBtn(say)}</div>
+  <button class="btn" data-act="howto">Saya siap</button>`;
+}
+
+function howtoView(){
+  const say = "Cara menjawab bagian satu. Di setiap soal ada empat kalimat. Pertama, pilih satu yang paling mirip kamu. Warnanya jadi hijau. Kedua, pilih satu yang paling tidak mirip kamu. Warnanya jadi merah. Lalu tekan Lanjut.";
+  return `
+  <p class="eyebrow">Bagian 1 · Cara menjawab</p>
+  <div class="howto">
+    <p>Di setiap soal ada <b>4 kalimat</b>.</p>
+    <ol>
+      <li>Pilih 1 yang <span class="swatch m">PALING MIRIP</span> kamu. Warnanya jadi hijau.</li>
+      <li>Lalu pilih 1 yang <span class="swatch l">PALING TIDAK MIRIP</span> kamu. Warnanya jadi merah.</li>
+      <li>Tekan <b>Lanjut</b>.</li>
+    </ol>
+    <p>Kadang semua kalimat terasa mirip. Tidak apa-apa. Pilih yang <b>paling</b> mirip.</p>
+  </div>
+  <div class="row">${speakBtn(say)}</div>
+  <button class="btn" data-act="startdisc">Mulai soal 1</button>`;
+}
+
+function discView(){
+  const i = C.i, b = DISC[i], ord = order(i), cur = C.disc[i] || {};
+  const step = !cur.m ? `<div class="step m">Pilih yang PALING MIRIP kamu</div>`
+            : !cur.l ? `<div class="step l">Sekarang pilih yang PALING TIDAK MIRIP kamu</div>`
+            : `<div class="step ok">Sudah. Tekan Lanjut.</div>`;
+  const opts = ord.map(k => {
+    const cls = cur.m===k ? "m" : cur.l===k ? "l" : "";
+    const tag = cls==="m" ? `<span class="tag">PALING MIRIP</span>` : cls==="l" ? `<span class="tag">TIDAK MIRIP</span>` : "";
+    return `<button class="opt ${cls}" data-act="pick" data-k="${k}"><span class="txt">${esc(b.o[k])}</span>${tag}</button>`;
+  }).join("");
+  const say = (b.q ? b.q.replace("…","") + ". " : "") + ord.map((k,n)=>`Pilihan ${n+1}: ${b.o[k]}`).join(" ");
+  return `
+  <div class="spread"><p class="eyebrow">Soal ${i+1} dari 20</p>${speakBtn(say)}</div>
+  <div class="progress"><span style="width:${i/30*100}%"></span></div>
+  ${b.q ? `<p class="qtext">${esc(b.q)}</p>` : ""}
+  ${step}
+  <div class="opts">${opts}</div>
+  ${cur.m && cur.l ? `<p class="small muted">Mau ganti? Tekan lagi pilihan yang hijau atau merah.</p>` : ""}
+  <div class="nav"><button class="btn ghost" data-act="back">Kembali</button><button class="btn" data-act="next" ${cur.m && cur.l ? "" : "disabled"}>Lanjut</button></div>`;
+}
+
+function part2View(){
+  const say = "Bagian satu sudah selesai. Bagus. Bagian dua: ada sepuluh cerita tentang menjaga anak. Bayangkan kamu sedang kerja di rumah ini. Ada dua anak laki-laki. Kakak umur dua setengah tahun. Adik umur satu tahun. Untuk setiap cerita, pilih satu jawaban yang biasa kamu lakukan.";
+  return `
+  <div class="progress"><span style="width:${20/30*100}%"></span></div>
+  <p class="big">Bagian 1 selesai!</p>
+  <div class="howto">
+    <p><b>Bagian 2:</b> ada 10 cerita tentang menjaga anak.</p>
+    <p>Bayangkan kamu sedang kerja di rumah ini. Ada 2 anak laki-laki:</p>
+    <ol><li><b>Kakak</b>, umur 2,5 tahun</li><li><b>Adik</b>, umur 1 tahun</li></ol>
+    <p>Pilih <b>1 jawaban</b> yang biasa kamu lakukan.</p>
+  </div>
+  <div class="row">${speakBtn(say)}</div>
+  <button class="btn" data-act="startscen">Mulai cerita 1</button>`;
+}
+
+function scenView(){
+  const i = C.i, sc = SCEN[i], cur = C.scen[i];
+  const opts = sc.o.map((o,k) => `<button class="opt ${cur===k?"sel":""}" data-act="choose" data-k="${k}"><span class="letter">${"ABCD"[k]}</span><span class="txt">${esc(o)}</span></button>`).join("");
+  const say = sc.t + " Apa yang kamu lakukan? " + sc.o.map((o,k)=>`${"ABCD"[k]}. ${o}`).join(" ");
+  return `
+  <div class="spread"><p class="eyebrow">Cerita ${i+1} dari 10</p>${speakBtn(say)}</div>
+  <div class="progress"><span style="width:${(20+i)/30*100}%"></span></div>
+  <p class="story">${esc(sc.t)}</p>
+  <p class="qtext">Apa yang kamu lakukan?</p>
+  <div class="opts">${opts}</div>
+  <div class="nav"><button class="btn ghost" data-act="back">Kembali</button><button class="btn" data-act="next" ${cur!=null ? "" : "disabled"}>${i===SCEN.length-1 ? "Selesai" : "Lanjut"}</button></div>`;
+}
+
+function message(){
+  return `Halo Bu/Pak, saya ${C.name} sudah selesai tes calon pengasuh. Ini jawaban saya:\n${DASHBOARD}#${buildCode(C)}`;
+}
+
+function doneView(){
+  const msg = message();
+  const href = `https://wa.me/${WA}?text=${encodeURIComponent(msg)}`;
+  return `
+  <div class="done-mark">${ICON.check}</div>
+  <p class="big center">Selesai!</p>
+  <p class="howto center">Terima kasih, ${esc(C.name)}.<br>Sekarang <b>kirim jawaban kamu</b> lewat WhatsApp.</p>
+  <a class="btn wa" href="${esc(href)}" target="_blank" rel="noopener">${ICON.wa}Kirim jawaban ke WhatsApp</a>
+  <p class="small muted center">${WA ? "Pesan akan terkirim ke nomor yang memberi link tes ini." : "Pilih kontak yang memberi link tes ini, lalu tekan kirim."} Jangan ubah isi pesannya.</p>
+  <details class="small">
+    <summary class="muted">Tombol tidak bisa? Salin pesan ini</summary>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-top:10px">
+      <textarea id="msg" readonly>${esc(msg)}</textarea>
+      <button class="btn ghost" data-act="copy">Salin pesan</button>
+      <p id="copied" class="small muted" hidden>Sudah disalin. Tempel di WhatsApp, lalu kirim.</p>
+    </div>
+  </details>`;
+}
+
+function render(){
+  const v = {start:startView, intro:introView, howto:howtoView, disc:discView, part2:part2View, scen:scenView, done:doneView}[C.stage] || startView;
+  $app.innerHTML = v();
+}
+function go(stage){ C.stage = stage; save(); render(); window.scrollTo(0,0); }
+
+/* ---------- Actions ---------- */
+const act = {
+  speak: ds => speak(ds.text),
+  howto(){ go("howto"); },
+  startdisc(){ C.startedAt = C.startedAt || Date.now(); C.i = 0; go("disc"); },
+  pick(ds){
+    const k = ds.k, cur = Object.assign({m:null,l:null}, C.disc[C.i]||{});
+    if(cur.m===k) cur.m=null; else if(cur.l===k) cur.l=null; else if(!cur.m) cur.m=k; else cur.l=k;
+    C.disc[C.i] = cur; save(); render();
+  },
+  choose(ds){ C.scen[C.i] = +ds.k; save(); render(); },
+  startscen(){ C.part2At = C.part2At || Date.now(); C.i = 0; go("scen"); },
+  back(){
+    if(C.stage==="disc"){ if(C.i===0) return go("howto"); C.i--; return go("disc"); }
+    if(C.stage==="scen"){ if(C.i===0){ C.i = DISC.length-1; return go("disc"); } C.i--; return go("scen"); }
+  },
+  next(){
+    if(C.stage==="disc"){ if(C.i < DISC.length-1){ C.i++; return go("disc"); } return go("part2"); }
+    if(C.stage==="scen"){ if(C.i < SCEN.length-1){ C.i++; return go("scen"); } C.finishedAt = Date.now(); return go("done"); }
+  },
+  async copy(){
+    const ta = document.getElementById("msg");
+    try{ await navigator.clipboard.writeText(ta.value); }catch{ ta.select(); try{ document.execCommand("copy"); }catch{} }
+    document.getElementById("copied").hidden = false;
+  },
+};
+$app.addEventListener("click", e => {
+  const b = e.target.closest("[data-act]"); if(!b || b.disabled) return;
+  act[b.dataset.act]?.(b.dataset);
+});
+$app.addEventListener("submit", e => {
+  if(e.target.id !== "startForm") return;
+  e.preventDefault();
+  C.name = document.getElementById("f-name").value.trim();
+  C.age = document.getElementById("f-age").value.trim();
+  C.origin = document.getElementById("f-origin").value.trim();
+  if(C.name) go("intro");
+});
+render();
+</script>
+</body>
+</html>
