@@ -44,6 +44,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,a:focus-visible{
 .icon-btn{display:inline-flex;align-items:center;gap:8px;background:var(--sunk);border:0;border-radius:999px;padding:8px 14px;font-weight:500;font-size:.9rem;flex:none}
 .icon-btn svg{width:18px;height:18px}
 .big{font-size:1.8rem;font-weight:600;line-height:1.25}
+.lead{font-size:1.15rem}
 .howto{display:flex;flex-direction:column;gap:12px;font-size:1.15rem}
 .howto ol{margin:0;padding-left:1.4em;display:flex;flex-direction:column;gap:10px}
 .swatch{display:inline-block;padding:1px 8px;border-radius:6px;font-weight:700;color:#fff}
@@ -191,7 +192,7 @@ const brand = `<div class="brand"><span class="brand-mark">TP</span>Tes Calon Pe
 function startView(){
   return brand + `
   <p class="big">Selamat datang!</p>
-  <p class="howto">Tes ini untuk lowongan <b>pengasuh anak</b>. Waktunya sekitar 20 menit. Kerjakan sendiri, di tempat yang tenang.</p>
+  <p class="lead">Tes ini untuk lowongan <b>pengasuh anak</b>. Waktunya sekitar 20 menit. Kerjakan sendiri, di tempat yang tenang.</p>
   <form id="startForm" class="howto" autocomplete="off">
     <label>Siapa nama kamu?<input id="f-name" required maxlength="40" value="${esc(C.name)}" placeholder="contoh: Sari"></label>
     <label>Umur berapa?<input id="f-age" inputmode="numeric" maxlength="3" value="${esc(C.age)}" placeholder="contoh: 28"></label>
@@ -294,7 +295,7 @@ function doneView(){
   return `
   <div class="done-mark">${ICON.check}</div>
   <p class="big center">Selesai!</p>
-  <p class="howto center">Terima kasih, ${esc(C.name)}.<br>Sekarang <b>kirim jawaban kamu</b> lewat WhatsApp.</p>
+  <p class="lead center">Terima kasih, ${esc(C.name)}.<br>Sekarang <b>kirim jawaban kamu</b> lewat WhatsApp.</p>
   <a class="btn wa" href="${esc(href)}" target="_blank" rel="noopener">${ICON.wa}Kirim jawaban ke WhatsApp</a>
   <p class="small muted center">${WA ? "Pesan akan terkirim ke nomor yang memberi link tes ini." : "Pilih kontak yang memberi link tes ini, lalu tekan kirim."} Jangan ubah isi pesannya.</p>
   <details class="small">
