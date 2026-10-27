@@ -106,6 +106,7 @@ textarea{min-height:110px;resize:vertical}
 .tile b{font-size:1.45rem;font-weight:600;font-variant-numeric:tabular-nums}
 .tile.on{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
 .controls{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.search{color:var(--muted);font-size:.8rem}
 .controls label{color:var(--muted);font-size:.8rem}
 .rlist{display:grid;gap:12px}
 .rc{display:flex;flex-direction:column;gap:14px;padding:16px;border:1px solid var(--line);border-radius:var(--r);background:var(--surface);cursor:pointer;min-width:0;box-shadow:var(--shadow);transition:border-color .12s}
@@ -279,29 +280,38 @@ const unclean = s => s === "~" ? "" : String(s||"").replace(/_/g," ");
 function checksum(s){ let h=0; for(const ch of s){ h = (h*31 + ch.charCodeAt(0)) >>> 0; } return (h % 1296).toString(36).padStart(2,"0"); }
 const s36 = n => Math.max(0, Math.round(n||0)).toString(36);
 
-// tp2.<id>.<name>.<age>.<origin>.<bio><scen><likert><disc>.<sjt s>.<likert s>.<disc s>.<total s>.<finished s>.<check>
+// Indonesian mobile number as typed -> "08xxxxxxxxxx", or "" when it does not look like one.
+function cleanPhone(v){
+  let d = String(v || "").replace(/\D/g, "");
+  if(d.startsWith("62")) d = "0" + d.slice(2); else if(d.startsWith("8")) d = "0" + d;
+  return /^08\d{8,12}$/.test(d) ? d : "";
+}
+
+// tp3.<id>.<name>.<age>.<origin>.<phone>.<bio><scen><likert><disc>.<sjt s>.<likert s>.<disc s>.<total s>.<finished s>.<check>
+// (tp2 = the same without <phone>; tp1 = the first test version)
 function buildCode(c){
   const ans = c.bio.join("") + c.scen.join("") + c.lik.join("") + c.disc.map(a => encPair(a.m, a.l)).join("");
-  const body = ["tp2", c.id, clean(c.name), clean(c.age), clean(c.origin), ans,
+  const body = ["tp3", c.id, clean(c.name), clean(c.age), clean(c.origin), cleanPhone(c.phone) || "~", ans,
     s36(c.dur.sjt), s36(c.dur.lik), s36(c.dur.disc), s36((c.finishedAt - c.startedAt)/1000), s36(c.finishedAt/1000)].join(".");
   return body + "." + checksum(body);
 }
 
-// Returns a stored record, or null when the code is damaged. Also reads the first version (tp1).
+// Returns a stored record, or null when the code is damaged. Reads every version.
 function decodeCode(raw){
   try{
-    const m = String(raw||"").match(/tp[12]\.[A-Za-z0-9._~-]+/); if(!m) return null;
+    const m = String(raw||"").match(/tp[123]\.[A-Za-z0-9._~-]+/); if(!m) return null;
     const parts = m[0].split(".");
-    const v = parts[0] === "tp2" ? 2 : 1;
-    const n = v === 2 ? 12 : 10;
+    const v = +parts[0].slice(2);
+    const n = {1:10, 2:12, 3:13}[v];
     if(parts.length !== n) return null;
     if(checksum(parts.slice(0, n-1).join(".")) !== parts[n-1]) return null;
-    const [, id, name, age, origin, ans] = parts;
+    const [, id, name, age, origin] = parts;
     const num = i => parseInt(parts[i], 36);
     const discFrom = str => [...str].map(ch => { const p = decPair(ch); if(!p) throw new Error("bad"); return p; });
-    const base = {id:"w"+id, name:unclean(name), age:unclean(age), origin:unclean(origin), notes:"", status:"Baru", source:"online"};
+    const base = {id:"w"+id, name:unclean(name), age:unclean(age), origin:unclean(origin), phone:"", notes:"", status:"Baru", source:"online"};
 
     if(v === 1){
+      const ans = parts[5];
       if(ans.length !== DISC.length + 10) return null;
       const disc = discFrom(ans.slice(0, DISC.length));
       const scen = [...ans.slice(DISC.length)].map(Number);
@@ -311,6 +321,9 @@ function decodeCode(raw){
         dur:{disc:discS, sjt:Math.max(0, (finishedAt-startedAt)/1000 - discS), lik:0}};
     }
 
+    // tp3 has one extra field (phone) before the answers.
+    const k = v === 3 ? 6 : 5, ans = parts[k];
+    const phone = v === 3 ? cleanPhone(unclean(parts[5])) : "";
     const nb = BIO.length, ns = SCEN.length, nl = LIK.length;
     if(ans.length !== nb + ns + nl + DISC.length) return null;
     const digits = s => [...s].map(Number);
@@ -321,9 +334,9 @@ function decodeCode(raw){
     if(bio.some((x,i) => !(x >= 0 && x < BIO[i].o.length))) return null;
     if(scen.some(x => !(x >= 0 && x <= 3))) return null;
     if(lik.some(x => !(x >= 1 && x <= 5))) return null;
-    const finishedAt = num(10)*1000, startedAt = finishedAt - num(9)*1000;
-    return {...base, v:2, bio, scen, lik, disc, startedAt, finishedAt, createdAt:finishedAt,
-      dur:{sjt:num(6), lik:num(7), disc:num(8)}};
+    const finishedAt = num(k+5)*1000, startedAt = finishedAt - num(k+4)*1000;
+    return {...base, phone, v:2, bio, scen, lik, disc, startedAt, finishedAt, createdAt:finishedAt,
+      dur:{sjt:num(k+1), lik:num(k+2), disc:num(k+3)}};
   }catch{ return null; }
 }
 
@@ -490,6 +503,15 @@ const STATUSES = ["Baru","Wawancara","Trial","Diterima","Tidak lanjut"];
 const statusOf = c => STATUSES.includes(c.status) ? c.status : "Baru";
 const statusCls = s => s==="Diterima" ? "good" : s==="Tidak lanjut" ? "bad" : s==="Baru" ? "neutral" : "warn";
 const bandColor = cls => `var(--${cls})`;
+const fmtPhone = p => p ? p.replace(/^(\d{4})(\d{4})(\d+)$/, "$1-$2-$3") : "";
+const waLink = p => "https://wa.me/62" + p.slice(1);
+// Search matches the name, or the phone number typed with or without 0 / +62.
+function matchQuery(c, q){
+  q = q.trim().toLowerCase(); if(!q) return true;
+  if(c.name.toLowerCase().includes(q)) return true;
+  let d = q.replace(/\D/g, ""); if(d.startsWith("62")) d = "0" + d.slice(2);
+  return d.length >= 3 && (c.phone || "").includes(d);
+}
 
 /* ---------- Sign-in: 6-digit PIN checked by the server (bcrypt, 5 tries then a 15-minute lock).
    The server hands back a session token that expires 30 minutes after the last use. ---------- */
@@ -539,7 +561,7 @@ const S = {
   view:"loading", after:"home", login:{stage:"login", buf:"", err:""}, sending:false,
   list:null, selId:null, confirmDel:false, noteMsg:"", flash:null, importErr:"", loadedAt:0,
   cname:"", invite:"", copyMsg:"", tab:"hasil",
-  filter:"all", fStatus:"all", sort:"skor", cmp:[], cache:new Map(),
+  filter:"all", fStatus:"all", q:"", sort:"skor", cmp:[], cache:new Map(),
 };
 // compute() is pure; cache by record identity so lists stay fast.
 function res(c){ let r = S.cache.get(c); if(!r){ r = compute(c); S.cache.set(c, r); } return r; }
@@ -606,7 +628,7 @@ function homeView(){
 
   const all = S.list.map(c => ({c, r:res(c), st:statusOf(c)}));
   const n = k => all.filter(x => x.r.verdict.key === k).length;
-  const rows = all.filter(x => (S.filter === "all" || x.r.verdict.key === S.filter) && (S.fStatus === "all" || x.st === S.fStatus));
+  const rows = all.filter(x => (S.filter === "all" || x.r.verdict.key === S.filter) && (S.fStatus === "all" || x.st === S.fStatus) && matchQuery(x.c, S.q));
   const by = {
     skor:(a,b) => b.r.overall - a.r.overall,
     baru:(a,b) => (b.c.finishedAt||b.c.createdAt||0) - (a.c.finishedAt||a.c.createdAt||0),
@@ -620,7 +642,7 @@ function homeView(){
 
   const cards = rows.map(({c, r, st}) => {
     const on = S.cmp.includes(c.id), P = STYLE[r.primary];
-    const meta = [fmtDate(c.finishedAt||c.createdAt), c.age ? esc(c.age)+" th" : "", c.origin ? esc(c.origin) : ""].filter(Boolean).join(" · ");
+    const meta = [c.phone ? fmtPhone(c.phone) : "", fmtDate(c.finishedAt||c.createdAt), c.age ? esc(c.age)+" th" : "", c.origin ? esc(c.origin) : ""].filter(Boolean).join(" · ");
     return `<div class="rc" role="button" tabindex="0" data-act="open" data-id="${esc(c.id)}" aria-label="Buka hasil ${esc(c.name)}">
       <div class="rc-top">
         ${ring(r.overall, r.overallBand.cls, 54)}
@@ -649,6 +671,7 @@ function homeView(){
     ${tile("warn","Perlu dicek",n("warn"),"warn")}
     ${tile("bad","Hati-hati",n("bad"),"bad")}
   </div>
+  <label class="search">Cari nama atau nomor HP<input id="f-q" type="search" inputmode="search" maxlength="40" value="${esc(S.q)}" placeholder="contoh: Sari atau 0812…" autocomplete="off"></label>
   <div class="controls">
     <label>Urutkan<select id="f-sort">${opt("skor","Skor tertinggi",S.sort)}${opt("baru","Terbaru",S.sort)}${opt("situasi","Skor situasi",S.sort)}${opt("flag","Red flag sedikit",S.sort)}</select></label>
     <label>Status<select id="f-status">${opt("all","Semua status",S.fStatus)}${STATUSES.map(s => opt(s,s,S.fStatus)).join("")}</select></label>
@@ -668,6 +691,13 @@ function resultView(){
   const c = S.list.find(x => x.id === S.selId);
   if(!c) return header() + `<button class="link" data-act="tab" data-t="hasil">← Hasil tes</button><div class="card"><p class="muted">Data calon tidak ditemukan.</p></div>`;
   const r = res(c), st = statusOf(c), P = STYLE[r.primary], Sec = r.secondary ? STYLE[r.secondary] : null;
+  const contact = c.phone ? `<div class="stack" style="gap:8px;margin-top:6px">
+      <span class="num">HP: <b>${fmtPhone(c.phone)}</b></span>
+      <div class="row nowrap" style="gap:8px">
+        <a class="btn ghost" style="min-height:40px;padding:6px 14px" href="${waLink(c.phone)}" target="_blank" rel="noopener">Chat WhatsApp</a>
+        <a class="btn ghost" style="min-height:40px;padding:6px 14px" href="tel:${c.phone}">Telepon</a>
+      </div>
+    </div>` : `<p class="small muted">Nomor HP tidak tercatat (tes versi lama).</p>`;
   const meta = [c.age ? esc(c.age)+" tahun" : "", c.origin ? esc(c.origin) : "", "Tes " + fmtDate(c.finishedAt),
     c.finishedAt && c.startedAt ? fmtSec((c.finishedAt - c.startedAt)/1000) : ""].filter(Boolean).join(" · ");
 
@@ -708,7 +738,7 @@ function resultView(){
 
   return header() + `
   <button class="link" data-act="tab" data-t="hasil">← Hasil tes</button>
-  <div class="stack" style="gap:4px"><h1>${esc(c.name)}</h1><p class="muted small">${meta}</p></div>
+  <div class="stack" style="gap:4px"><h1>${esc(c.name)}</h1><p class="muted small">${meta}</p>${contact}</div>
   <div class="stack" style="gap:6px">
     <span class="eyebrow">Status rekrutmen</span>
     <div class="seg" role="group" aria-label="Status rekrutmen">${STATUSES.map(s => `<button class="${s===st?"on":""}" data-act="setstatus" data-s="${s}" aria-pressed="${s===st}">${s}</button>`).join("")}</div>
@@ -825,6 +855,7 @@ function compareView(){
       ${row("Kecocokan gaya", items.map(({r}) => `<span class="chip ${r.disc.fit.cls}">${r.disc.fit.t}</span>`))}
       ${sec("Lainnya")}
       ${row("Pengalaman", items.map(({c}) => Array.isArray(c.bio) ? esc(BIO[0].o[c.bio[0]]) : "-"))}
+      ${row("Nomor HP", items.map(({c}) => c.phone ? `<a href="${waLink(c.phone)}" target="_blank" rel="noopener">${fmtPhone(c.phone)}</a>` : "-"))}
       ${row("Umur · asal", items.map(({c}) => [c.age ? esc(c.age) + " th" : "-", c.origin ? esc(c.origin) : ""].filter(Boolean).join(" · ")))}
       ${row("Catatan", items.map(({c}) => c.notes ? `<span class="small">${esc(c.notes)}</span>` : `<span class="muted">-</span>`))}
     </tbody>
@@ -947,7 +978,7 @@ async function enter(){
 }
 
 async function importCode(text){
-  const m = String(text || "").match(/tp[12]\.[A-Za-z0-9._~-]+/);
+  const m = String(text || "").match(/tp[123]\.[A-Za-z0-9._~-]+/);
   const rec = m && decodeCode(m[0]);
   if(!rec){ S.importErr = "Kode jawaban tidak dikenali. Pastikan seluruh pesan dari calon ikut ditempel dan tidak diubah."; render(); return; }
   const id = rec.id.slice(1);
@@ -975,7 +1006,7 @@ const act = {
   },
   open(ds){ S.selId = ds.id; S.confirmDel = false; S.noteMsg = ""; S.flash = null; go("result"); },
   filt(ds){ S.filter = (S.filter === ds.f && ds.f !== "all") ? "all" : ds.f; render(); },
-  filtreset(){ S.filter = "all"; S.fStatus = "all"; render(); },
+  filtreset(){ S.filter = "all"; S.fStatus = "all"; S.q = ""; render(); },
   cmp(ds){
     const i = S.cmp.indexOf(ds.id);
     if(i >= 0) S.cmp.splice(i, 1);
@@ -1028,6 +1059,11 @@ $app.addEventListener("click", e => {
   const b = e.target.closest("[data-act]"); if(!b || b.disabled) return;
   if(b.tagName === "A") return;
   act[b.dataset.act]?.(b.dataset, b);
+});
+$app.addEventListener("input", e => {
+  if(e.target.id !== "f-q") return;
+  S.q = e.target.value; render();
+  const el = document.getElementById("f-q"); el.focus(); el.setSelectionRange(el.value.length, el.value.length);
 });
 $app.addEventListener("change", e => {
   if(e.target.id === "f-sort"){ S.sort = e.target.value; render(); }
